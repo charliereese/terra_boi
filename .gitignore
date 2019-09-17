@@ -1,0 +1,9 @@
+.bundle/
+log/*.log
+pkg/
+test/dummy/log/*.log
+test/dummy/tmp/
+coverage
+.byebug_history
+.DS_Store
+*.gem
