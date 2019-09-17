@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Charlie Reese"]
   spec.email       = ["j.charles.reese@gmail.com"]
   spec.homepage    = "https://github.com/charliereese/terra_boi"
-  spec.summary     = "Terraform infrastructure generators for AWS and Rails packaged as rails gem."
-  spec.description = "TerraBoi gem contains rails generators to create zero-downtime infrastructure and autoscaling supporting load balancing, (rails) web app, DB, and S3 buckets."
+  spec.summary     = "Terraform infrastructure generators for AWS and Rails."
+  spec.description = "The TerraBoi gem contains rails generators to create Terraform infrastructure as code. The generators create infrastructure code for load balancing / auto scaling / zero-downtime deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets."
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
