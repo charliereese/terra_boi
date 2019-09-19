@@ -40,9 +40,9 @@ Then run `source ~/.zprofile` (or equivalent command if not using .zsh)
 
 **B. Set up remote state:**
 
-`cd terraform/[ENV]/state`
+`cd terraform/state`
 
-Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking.
+Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking (this will work for both prod and staging).
 
 **C. Set up DB / S3:**
 
@@ -84,9 +84,11 @@ terraform destroy
 
 ## Infrastructure created
 
-The aforementioned generators create a `terraform` directory with `prod` and `staging` subdirectories. 
+The aforementioned generators create a `terraform` directory with `state`, `prod`, and `staging` subdirectories. 
 
-The `prod` and `staging` subdirectories contain `state` (s3 + DynamoDB), `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
+The `state` directory contains an S3 bucket and a DynamoDB table to store and lock state (for both prod and staging).
+
+The `prod` and `staging` subdirectories contain `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
 
 ## Running tests
 
@@ -98,7 +100,9 @@ rake test
 
 ## Contributing
 
-This gem is currently not accepting contributions.
+This gem is currently not actively accepting contributions. 
+
+With that in mind, if you'd like to make a fix / change, please create a pull request (and when I have a moment - probably in a couple weeks time - I'll have a look)!
 
 ## License
 
