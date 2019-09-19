@@ -170,7 +170,7 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-resource "aws_lb_listener_rule" "asg" {
+resource "aws_lb_listener_rule" "asg-http" {
   listener_arn = aws_lb_listener.http.arn
   priority     = 100
 
@@ -191,6 +191,7 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.example.arn
   port              = local.https_port
   protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate_validation.cert.certificate_arn
 
   # By default, return a simple 404 page
   default_action {
@@ -204,7 +205,7 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-resource "aws_lb_listener_rule" "asg" {
+resource "aws_lb_listener_rule" "asg-https" {
   listener_arn = aws_lb_listener.https.arn
   priority     = 100
 
@@ -267,6 +268,16 @@ resource "aws_security_group_rule" "allow_http_inbound" {
   cidr_blocks = local.all_ips
 }
 
+resource "aws_security_group_rule" "allow_https_inbound" {
+  type              = "ingress"
+  security_group_id = aws_security_group.alb.id
+
+  from_port   = local.https_port
+  to_port     = local.https_port
+  protocol    = local.tcp_protocol
+  cidr_blocks = local.all_ips
+}
+
 resource "aws_security_group_rule" "allow_all_outbound" {
   type              = "egress"
   security_group_id = aws_security_group.alb.id
@@ -278,7 +289,7 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# 8. CLOUDWATCH MET
+# 8. CLOUDWATCH METRICS
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
@@ -299,7 +310,28 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu_utilization" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# 8. LOCAL VARIABLES
+# 9. SSL CERT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_acm_certificate" "cert" {
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  tags = {
+    Environment = "staging"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  certificate_arn = "${aws_acm_certificate.cert.arn}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 10. LOCAL VARIABLES
 # ---------------------------------------------------------------------------------------------------------------------
 
 locals {

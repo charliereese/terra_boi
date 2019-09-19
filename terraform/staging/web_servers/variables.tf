@@ -3,11 +3,16 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 # 1.1 REQUIRED
+
 variable "cluster_name" {
   description = "The name to use for all the cluster resources"
   type        = string
 }
 
+variable "domain_name" {
+  description = "Your domain name (e.g. example.com)"
+  type        = string
+}
 
 # 1.2 OPTIONAL
 
