@@ -11,13 +11,13 @@ This gem was created because I got tired of creating basic infrastructure to hou
 
 ## Installation
 
-C. Add this line to your (Rails) application's Gemfile:
+Add this line to your (Rails) application's Gemfile:
 
 ```ruby
 gem 'terra_boi'
 ```
 
-D. And then execute:
+And then execute:
 
 ```bash
 $ bundle
@@ -36,6 +36,8 @@ export AWS_ACCESS_KEY_ID=your_access_key_id
 export AWS_SECRET_ACCESS_KEY=your_secret_access_key
 ```
 
+Then run `source ~/.zprofile` (or equivalent command if not using .zsh)
+
 **B. Set up remote state:**
 
 `cd terraform/[ENV]/state`
@@ -52,8 +54,6 @@ Set terraform data-related environment variables in .zprofile (or your respectiv
 TF_VAR_db_password=your_password
 TF_VAR_db_username=your_username
 ```
-
-`source ~/.zprofile`
 
 Set any other data-related environment variables (likely to override default values) in a terraform.tfvars file in the appropriate terraform subfolders like so (make sure you add `*.tfvars` to your .gitignore):
 
@@ -86,7 +86,7 @@ terraform destroy
 
 The aforementioned generators create a `terraform` directory with `prod` and `staging` subdirectories. 
 
-The `prod` and `staging` subdirectories contain `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
+The `prod` and `staging` subdirectories contain `state` (s3 + DynamoDB), `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
 
 ## Running tests
 
