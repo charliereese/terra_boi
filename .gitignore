@@ -7,3 +7,6 @@ coverage
 .byebug_history
 .DS_Store
 *.gem
+*.tfvars
+.terraform
+*tfstate*

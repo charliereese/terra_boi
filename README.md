@@ -9,38 +9,72 @@ This gem was created because I got tired of creating basic infrastructure to hou
 * [Terraform](https://www.terraform.io/) installed on your computer. 
 * [Amazon Web Services (AWS) account](http://aws.amazon.com/).
 
-Set up your [AWS access / secret access 
-keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) as 
-environment variables:
-
-```
-export AWS_ACCESS_KEY_ID=(your access key id)
-export AWS_SECRET_ACCESS_KEY=(your secret access key)
-```
-
 ## Installation
 
-Add this line to your (Rails) application's Gemfile:
+C. Add this line to your (Rails) application's Gemfile:
 
 ```ruby
 gem 'terra_boi'
 ```
 
-And then execute:
+D. And then execute:
+
 ```bash
 $ bundle
 ```
 
 ## Usage
 
-To deploy infrastructure to AWS, cd from root into `terraform/prod` or `terraform/staging`, then follow the following steps:
+**A. Setup AWS access:**
 
-Deploy infrastructure:
+Set up your [AWS access / secret access 
+keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) as 
+environment variables:
+
+```
+export AWS_ACCESS_KEY_ID=your_access_key_id
+export AWS_SECRET_ACCESS_KEY=your_secret_access_key
+```
+
+**B. Set up remote state:**
+
+`cd terraform/[ENV]/state`
+
+Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking.
+
+**C. Set up DB / S3:**
+
+`cd terraform/[ENV]/data`
+
+Set terraform data-related environment variables in .zprofile (or your respective shell dotfile)
+
+```
+TF_VAR_db_password=your_password
+TF_VAR_db_username=your_username
+```
+
+`source ~/.zprofile`
+
+Set any other data-related environment variables (likely to override default values) in a terraform.tfvars file in the appropriate terraform subfolders like so (make sure you add `*.tfvars` to your .gitignore):
+
+```
+db_identifier = "NAME-staging"
+db_encrypted = false
+db_instance_class = "db.t2.micro"
+```
+
+To deploy infrastructure to AWS, cd from root into `terraform/prod` or `terraform/staging`, then follow the following steps:
 
 ```
 terraform init
 terraform apply
 ```
+
+**D. Set up web servers:**
+
+`cd terraform/[ENV]/web_servers`
+
+**E. Other tips:**
 
 Clean up when done (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
 
