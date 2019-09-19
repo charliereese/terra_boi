@@ -63,16 +63,42 @@ db_encrypted = false
 db_instance_class = "db.t2.micro"
 ```
 
-To deploy infrastructure to AWS, cd from root into `terraform/prod` or `terraform/staging`, then follow the following steps:
+To deploy infrastructure to AWS:
 
 ```
-terraform init
+terraform init # IF NOT ALREADY RUN
 terraform apply
 ```
 
 **D. Set up web servers:**
 
 `cd terraform/[ENV]/web_servers`
+
+Set any other data-related environment variables (likely to override default values) in a terraform.tfvars file in the appropriate terraform subfolders like so (make sure you add `*.tfvars` to your .gitignore):
+
+```
+ami = "ami-0c55b159cbfafe1f0"
+cluster_name = "clientelify-staging"
+min_size = 1
+max_size = 1
+business_hours_size = 1
+night_hours_size = 1
+```
+
+To deploy infrastructure to AWS:
+
+```
+terraform init # IF NOT ALREADY RUN
+terraform apply
+```
+
+You should now be able to load the dns name of the application load balancer in your browser and receive a response.
+
+To redirect domain name to Application load balancer:
+
+- Go to your domain registrar of choice
+- Create alias record that points to the dns name of the application load balancer
+- Create URL redirect record (redirect www.site.com to site.com)
 
 **E. Other tips:**
 

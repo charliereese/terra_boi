@@ -1,4 +1,14 @@
-# output "address" {
-#   value       = aws_db_instance.primary.address
-#   description = "Connect to the database at this endpoint"
-# }
+output "alb_dns_name" {
+  value       = aws_lb.example.dns_name
+  description = "The domain name of the application load balancer"
+}
+
+output "asg_name" {
+  value       = aws_autoscaling_group.example.name
+  description = "autoscaling group name"
+}
+
+output "alb_security_group_id" {
+  value       = aws_security_group.alb.id
+  description = "ID of Security Group attached to ALB"
+}
