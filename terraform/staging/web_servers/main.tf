@@ -17,10 +17,12 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "webserver_cluster" {
-  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.1"
+  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.3"
 
   ami                 = "ami-0c55b159cbfafe1f0"
-  cluster_name        = "clientelify-staging"
+  instance_type       = "t2.micro"
+  env                 = "staging"
+  app_name            = "clientelify"
   domain_name         = "clientelify.com"
   min_size            = 1
   max_size            = 1

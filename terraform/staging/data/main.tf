@@ -20,12 +20,12 @@ variable "db_username" {}
 variable "db_password" {}
 
 module "db_and_s3" {
-  source = "github.com/charliereese/terraform_modules//data?ref=v0.0.2"
+  source = "github.com/charliereese/terraform_modules//data?ref=v0.0.3"
 
-  db_identifier     = "clientelify-staging"
-  db_encrypted      = false
+  env               = "staging"
+  app_name          = "clientelify"
   db_instance_class = "db.t2.micro"
-  s3_bucket_name    = "clientelify-staging-web-assets"
+  db_encrypted      = false
   db_username       = var.db_username
   db_password       = var.db_password
 }
