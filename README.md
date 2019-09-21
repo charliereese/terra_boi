@@ -82,8 +82,8 @@ While aws_acm_certificate_validation.cert is creating (it will hang if you don't
 i. Log into AWS console, go to certificate management, and add the created CNAME record specified to the DNS configuration for your domain
 ii. Redirect domain name to Application load balancer:
 	- Go to your domain registrar of choice
-	- Create alias record that points to the dns name of the application load balancer
-	- Create URL redirect record (redirect www.site.com to site.com)
+	- Create alias record that points to the dns name of the application load balancer (use subdomain in alias record like STAGING.example.com for staging)
+	- Create URL redirect record for prod (redirect www.site.com to site.com)
 
 After these changes propogate (should take about an hour or two locally), your webservers should be set up, https should be working, and you should be good to go!
 
