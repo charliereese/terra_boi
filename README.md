@@ -95,6 +95,8 @@ Clean up when done (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
 terraform destroy
 ```
 
+**For extra security in staging:** update Terraform web_servers `main.tf` file to only allow ingress web_server connections from your IP / your team's IPs
+
 ## Infrastructure created
 
 The aforementioned generators create a `terraform` directory with `state`, `prod`, and `staging` subdirectories. 
