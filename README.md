@@ -1,6 +1,6 @@
 # TerraBoi
 
-The TerraBoi gem contains rails generators to create Terraform infrastructure as code. The generators create infrastructure code for load balancing / auto scaling / zero-downtime deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets.
+The TerraBoi gem contains rails generators to create Terraform infrastructure as code. The generators create infrastructure code for load-balancing / auto-scaling / zero-downtime web app deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets.
 
 This gem was created because I got tired of creating basic infrastructure to house small SaaS applications on AWS over and over again. Now I use the generators in this gem and I don't have to :)
 
