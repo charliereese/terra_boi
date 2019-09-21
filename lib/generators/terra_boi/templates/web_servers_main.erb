@@ -4,10 +4,10 @@
 
 terraform {
   backend "s3" {
-    bucket         = "clientelify-terraform-state-storage"
-    key            = "terraform/staging-state/web-servers"
+    bucket         = "<%= application_name %>-terraform-state-storage"
+    key            = "terraform/<%= config[:env] %>-state/web-servers"
     region         = "us-east-2"
-    dynamodb_table = "clientelify-terraform-state-lock"
+    dynamodb_table = "<%= application_name %>-terraform-state-lock"
     encrypt        = true
   }
 }
@@ -21,9 +21,9 @@ module "webserver_cluster" {
 
   ami                 = "ami-0c55b159cbfafe1f0"
   instance_type       = "t2.micro"
-  env                 = "staging"
-  app_name            = "clientelify"
-  domain_name         = "clientelify.com"
+  env                 = "<%= config[:env] %>"
+  app_name            = "<%= application_name %>"
+  domain_name         = "<%= config[:domain_name] %>"
   min_size            = 1
   max_size            = 1
   business_hours_size = 1

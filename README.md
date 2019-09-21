@@ -38,13 +38,17 @@ export AWS_SECRET_ACCESS_KEY=your_secret_access_key
 
 Then run `source ~/.zprofile` (or equivalent command if not using .zsh)
 
-**B. Set up remote state:**
+**B. Set up boilerplate infrastructure (remote state, data, web servers):**
+
+`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM`
+
+**C. Set up remote state:**
 
 `cd terraform/state`
 
 Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking (this will work for both prod and staging).
 
-**C. Set up DB / S3:**
+**D. Set up DB / S3:**
 
 `cd terraform/[ENV]/data`
 
@@ -55,14 +59,6 @@ TF_VAR_db_password=your_password
 TF_VAR_db_username=your_username
 ```
 
-Set any other data-related environment variables (likely to override default values) in a terraform.tfvars file in the appropriate terraform subfolders like so (make sure you add `*.tfvars` to your .gitignore):
-
-```
-db_identifier = "NAME-staging"
-db_encrypted = false
-db_instance_class = "db.t2.micro"
-```
-
 To deploy infrastructure to AWS:
 
 ```
@@ -70,20 +66,9 @@ terraform init # IF NOT ALREADY RUN
 terraform apply
 ```
 
-**D. Set up web servers:**
+**E. Set up web servers:**
 
 `cd terraform/[ENV]/web_servers`
-
-Set any other data-related environment variables (likely to override default values) in a terraform.tfvars file in the appropriate terraform subfolders like so (make sure you add `*.tfvars` to your .gitignore):
-
-```
-ami = "ami-0c55b159cbfafe1f0"
-cluster_name = "clientelify-staging"
-min_size = 1
-max_size = 1
-business_hours_size = 1
-night_hours_size = 1
-```
 
 To deploy infrastructure to AWS:
 
@@ -102,7 +87,7 @@ ii. Redirect domain name to Application load balancer:
 
 After these changes propogate (should take about an hour or two locally), your webservers should be set up, https should be working, and you should be good to go!
 
-**E. Other tips:**
+**F. Other tips:**
 
 Clean up when done (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
 

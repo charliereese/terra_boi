@@ -4,10 +4,10 @@
 
 terraform {
   backend "s3" {
-    bucket         = "clientelify-terraform-state-storage"
-    key            = "terraform/staging-state/data"
+    bucket         = "<%= application_name %>-terraform-state-storage"
+    key            = "terraform/<%= config[:env] %>-state/data"
     region         = "us-east-2"
-    dynamodb_table = "clientelify-terraform-state-lock"
+    dynamodb_table = "<%= application_name %>-terraform-state-lock"
     encrypt        = true
   }
 }
@@ -22,8 +22,8 @@ variable "db_password" {}
 module "db_and_s3" {
   source = "github.com/charliereese/terraform_modules//data?ref=v0.0.3"
 
-  env               = "staging"
-  app_name          = "clientelify"
+  env               = "<%= config[:env] %>"
+  app_name          = "<%= application_name %>"
   db_instance_class = "db.t2.micro"
   db_encrypted      = false
   db_username       = var.db_username

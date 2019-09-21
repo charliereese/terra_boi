@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     terra_boi (0.0.1)
-      rails (~> 6.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -135,6 +134,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  rails (~> 6.0.0)
   terra_boi!
 
 BUNDLED WITH
