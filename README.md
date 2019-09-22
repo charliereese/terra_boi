@@ -11,6 +11,10 @@ This gem was created because I got tired of creating basic infrastructure to hou
 
 ## Installation
 
+Note: below installation steps should be completed in order.
+
+#### Installation - gem
+
 Add this line to your (Rails) application's Gemfile:
 
 ```ruby
@@ -23,32 +27,54 @@ And then execute:
 $ bundle
 ```
 
-## Usage
-
-**A. Setup AWS access:**
+#### Installation - AWS access
 
 Set up your [AWS access / secret access 
-keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) as 
-environment variables:
+keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) in `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variables:
 
 ```
 export AWS_ACCESS_KEY_ID=your_access_key_id
 export AWS_SECRET_ACCESS_KEY=your_secret_access_key
 ```
 
-Then run `source ~/.zprofile` (or equivalent command if not using .zsh)
+Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
 
-**B. Set up boilerplate infrastructure (remote state, data, web servers):**
+#### Installation - generate infrastructure code
 
-`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM`
+To generate boilerplate infrastructure code (config.host initializer filer, Dockerfile, Packer repository, and terraform repository):
 
-**C. Set up remote state:**
+`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM --dockerhub_image username/image:latest`
+
+#### Installation - Packer (creating web server AMIs)
+
+**A. Create private DockerHub repository**
+
+Create private DockerHub repository for your rails application (if possible, use the exact same name as your rails application).
+
+Note: packer generator will assume your DockerHub repository has the same name as your rails application folder. If this isn't true, update generated Packer `ami_build.json` file after it is generated.
+
+**B. Setup DockerHub access:**
+
+Add DockerHub access key to `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variable (if your image is in a private repository):
+
+```
+DOCKERHUB_ACCESS_TOKEN=myAccessToken
+export DOCKERHUB_ACCESS_TOKEN
+```
+
+Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
+
+Note: DockerHub access key can be found at https://hub.docker.com/settings/security
+
+#### Installation - Terraform (Deploying DBs + web server AMIs)
+
+**A. Set up remote state:**
 
 `cd terraform/state`
 
 Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking (this will work for both prod and staging).
 
-**D. Set up DB / S3:**
+**B. Set up DB / S3:**
 
 `cd terraform/[ENV]/data`
 
@@ -66,7 +92,7 @@ terraform init # IF NOT ALREADY RUN
 terraform apply
 ```
 
-**E. Set up web servers:**
+**C. Set up web servers:**
 
 `cd terraform/[ENV]/web_servers`
 
@@ -87,15 +113,46 @@ ii. Redirect domain name to Application load balancer:
 
 After these changes propogate (should take about an hour or two locally), your webservers should be set up, https should be working, and you should be good to go!
 
-**F. Other tips:**
 
-Clean up when done (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
+
+## Usage
+
+Note: below usage steps should be completed in order
+
+#### Usage - Packer (creating web server AMIs)
+
+**A. Push latest application image to DockerHub**
+
+You can automatically trigger DockerHub image builds when new code is pushed to a repository's master branch using DockerHub's free Github integration. 
+
+Otherwise, `docker push [DOCKER_USERNAME]/[APPLICATION_NAME]:latest`. Make sure you are pushing to a private repository.
+
+**B. Create Packer AMI:**
 
 ```
-terraform destroy
+cd packer 
+
+packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN application.json
 ```
 
-**For extra security in staging:** update Terraform web_servers `main.tf` file to only allow ingress web_server connections from your IP / your team's IPs
+**B. Clean Up:**
+
+Every so often you'll want to remove old AMIs created by Packer (unless you want to be charged a couple cents a month).
+
+To remove them, deregister them on the [AWS AMI management page](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Images:sort=name), then delete the associated snapshot on the [AWS snapshot management page](https://us-east-2.console.aws.amazon.com/ec2/home?region=us-east-2#Snapshots:sort=snapshotId).
+
+#### Usage - Terraform (update web server AMIs)
+
+**A. Update Terraform web server AMIs:**
+
+`cd terraform/[ENV]/web_servers`
+
+To deploy infrastructure to AWS:
+
+```
+terraform init # IF NOT ALREADY RUN
+terraform apply
+```
 
 ## Infrastructure created
 
@@ -112,6 +169,14 @@ From the root directory:
 ```
 rake test
 ```
+
+## Other tips:
+
+Clean up terraform infrastructure when no longer planning to use (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
+
+`terraform destroy`
+
+**For extra security in staging:** update Terraform web_servers `main.tf` file to only allow ingress web_server connections from your IP / your team's IPs
 
 ## Contributing
 

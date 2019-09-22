@@ -10,3 +10,5 @@ coverage
 *.tfvars
 .terraform
 *tfstate*
+terraform
+packer
