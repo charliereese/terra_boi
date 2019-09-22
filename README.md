@@ -2,12 +2,22 @@
 
 The TerraBoi gem contains rails generators to create Terraform infrastructure as code. The generators create infrastructure code for load-balancing / auto-scaling / zero-downtime web app deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets.
 
-This gem was created because I got tired of creating basic infrastructure to house small SaaS applications on AWS over and over again. Now I use the generators in this gem and I don't have to :)
+This gem was created because I got tired of creating basic infrastructure to house production SaaS applications on AWS over and over again. Now I use the generators in this gem to quickly deploy applications to scaleable production environments.
+
+List of items created by this gem's generators:
+- Dockerfile
+- Rails initializer file (for setting up config.hosts)
+- Packer repository (for creating AMIs)
+- Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure, as well as deploy application updates through new AMIs)
+
+
 
 ## Pre-requisites
 
 * [Terraform](https://www.terraform.io/) installed on your computer. 
-* [Amazon Web Services (AWS) account](http://aws.amazon.com/).
+* [Amazon Web Services (AWS) account](http://aws.amazon.com/)
+
+
 
 ## Installation
 
@@ -154,6 +164,8 @@ terraform init # IF NOT ALREADY RUN
 terraform apply
 ```
 
+
+
 ## Infrastructure created
 
 The aforementioned generators create a `terraform` directory with `state`, `prod`, and `staging` subdirectories. 
@@ -161,6 +173,8 @@ The aforementioned generators create a `terraform` directory with `state`, `prod
 The `state` directory contains an S3 bucket and a DynamoDB table to store and lock state (for both prod and staging).
 
 The `prod` and `staging` subdirectories contain `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
+
+
 
 ## Running tests
 
@@ -170,6 +184,8 @@ From the root directory:
 rake test
 ```
 
+
+
 ## Other tips:
 
 Clean up terraform infrastructure when no longer planning to use (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
@@ -178,11 +194,15 @@ Clean up terraform infrastructure when no longer planning to use (DANGER FOR PRO
 
 **For extra security in staging:** update Terraform web_servers `main.tf` file to only allow ingress web_server connections from your IP / your team's IPs
 
+
+
 ## Contributing
 
 This gem is currently not actively accepting contributions. 
 
 With that in mind, if you'd like to make a fix / change, please create a pull request (and when I have a moment - probably in a couple weeks time - I'll have a look)!
+
+
 
 ## License
 
