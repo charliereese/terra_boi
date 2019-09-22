@@ -149,7 +149,7 @@ cd packer
 packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN application.json
 ```
 
-**B. Clean up:**
+**C. Clean up:**
 
 Every so often you'll want to remove old AMIs created by Packer (unless you want to be charged a couple cents a month).
 
