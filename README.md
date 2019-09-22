@@ -2,7 +2,7 @@
 
 This gem was created to get rails applications deployed into production as quickly and easily as possible.
 
-Raison d'etre: Creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
+Raison d'etre: creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
 
 List of items created by this gem's generators:
 - Dockerfile
@@ -10,15 +10,15 @@ List of items created by this gem's generators:
 - Packer repository (for creating AMIs)
 - Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure as well as rolling out application updates)
 
-Note: Generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
+Note: generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
 
-Note: After infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
+Note: after infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
 
 
 
 ## Pre-requisites
 
-* [Terraform](https://www.terraform.io/) installed on your computer. 
+* [Terraform](https://www.terraform.io/) installed on your computer
 * [Amazon Web Services (AWS) account](http://aws.amazon.com/)
 
 
@@ -27,7 +27,7 @@ Note: After infrastructure files are generated, you will be ready to deploy your
 
 Note: below installation steps should be completed in order.
 
-#### Installation - gem
+### Installation - gem
 
 Add this line to your (Rails) application's Gemfile:
 
@@ -41,7 +41,7 @@ And then execute:
 $ bundle
 ```
 
-#### Installation - AWS access
+### Installation - AWS access
 
 Set up your [AWS access / secret access 
 keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) in `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variables:
@@ -53,13 +53,13 @@ export AWS_SECRET_ACCESS_KEY=your_secret_access_key
 
 Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
 
-#### Installation - generate infrastructure code
+### Installation - generate infrastructure code
 
 To generate boilerplate infrastructure code (config.host initializer filer, Dockerfile, Packer repository, and terraform repository):
 
 `rails generate terra_boi:boilerplate --domain_name DOMAIN.COM --dockerhub_image username/image:latest`
 
-#### Installation - Packer (creating web server AMIs)
+### Installation - Packer (creating web server AMIs)
 
 **A. Create private DockerHub repository**
 
@@ -80,7 +80,7 @@ Then run `source ~/.zprofile` (or equivalent command for your shell if not using
 
 Note: DockerHub access key can be found at https://hub.docker.com/settings/security
 
-#### Installation - Terraform (Deploying DBs + web server AMIs)
+### Installation - Terraform (Deploying DBs + web server AMIs)
 
 **A. Set up remote state:**
 
@@ -133,7 +133,7 @@ After these changes propogate (should take about an hour or two locally), your w
 
 Note: below usage steps should be completed in order
 
-#### Usage - Packer (creating web server AMIs)
+### Usage - Packer (creating web server AMIs)
 
 **A. Push latest application image to DockerHub**
 
@@ -155,7 +155,7 @@ Every so often you'll want to remove old AMIs created by Packer (unless you want
 
 To remove them, deregister them on the [AWS AMI management page](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Images:sort=name), then delete the associated snapshot on the [AWS snapshot management page](https://us-east-2.console.aws.amazon.com/ec2/home?region=us-east-2#Snapshots:sort=snapshotId).
 
-#### Usage - Terraform (update web server AMIs)
+### Usage - Terraform (update web server AMIs)
 
 **A. Update Terraform web server AMIs:**
 
