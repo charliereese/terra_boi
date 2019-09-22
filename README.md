@@ -2,7 +2,7 @@
 
 This gem was created to get rails applications deployed into production as quickly and easily as possible.
 
-Raison d'etre: creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
+**Raison d'etre**: creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
 
 List of items created by this gem's generators:
 - Dockerfile
@@ -10,9 +10,9 @@ List of items created by this gem's generators:
 - Packer repository (for creating AMIs)
 - Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure as well as rolling out application updates)
 
-Note: generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
+**Note**: generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
 
-Note: after infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
+**Note**: after infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
 
 
 
@@ -25,7 +25,7 @@ Note: after infrastructure files are generated, you will be ready to deploy your
 
 ## Installation
 
-Note: below installation steps should be completed in order.
+**Note**: below installation steps should be completed in order.
 
 ### Installation - gem
 
@@ -65,7 +65,7 @@ To generate boilerplate infrastructure code (config.host initializer filer, Dock
 
 Create private DockerHub repository for your rails application (if possible, use the exact same name as your rails application).
 
-Note: packer generator will assume your DockerHub repository has the same name as your rails application folder. If this isn't true, update generated Packer `ami_build.json` file after it is generated.
+**Note**: packer generator will assume your DockerHub repository has the same name as your rails application folder. If this isn't true, update generated Packer `ami_build.json` file after it is generated.
 
 **B. Setup DockerHub access:**
 
@@ -78,9 +78,9 @@ export DOCKERHUB_ACCESS_TOKEN
 
 Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
 
-Note: DockerHub access key can be found at https://hub.docker.com/settings/security
+**Note**: DockerHub access key can be found at https://hub.docker.com/settings/security
 
-### Installation - Terraform (Deploying DBs + web server AMIs)
+### Installation - Terraform (deploying DBs + web server AMIs)
 
 **A. Set up remote state:**
 
@@ -131,7 +131,7 @@ After these changes propogate (should take about an hour or two locally), your w
 
 ## Usage
 
-Note: below usage steps should be completed in order
+**Note**: below usage steps should be completed in order
 
 ### Usage - Packer (creating web server AMIs)
 
@@ -149,7 +149,7 @@ cd packer
 packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN application.json
 ```
 
-**B. Clean Up:**
+**B. Clean up:**
 
 Every so often you'll want to remove old AMIs created by Packer (unless you want to be charged a couple cents a month).
 
@@ -190,7 +190,7 @@ rake test
 
 
 
-## Other tips:
+## Other tips
 
 Clean up terraform infrastructure when no longer planning to use (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
 
