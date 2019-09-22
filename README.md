@@ -1,14 +1,18 @@
 # TerraBoi
 
-The TerraBoi gem contains rails generators to create Terraform infrastructure as code. The generators create infrastructure code for load-balancing / auto-scaling / zero-downtime web app deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets.
+This gem was created to get rails applications deployed into production as quickly and easily as possible.
 
-This gem was created because I got tired of creating basic infrastructure to house production SaaS applications on AWS over and over again. Now I use the generators in this gem to quickly deploy applications to scaleable production environments.
+Raison d'etre: Creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
 
 List of items created by this gem's generators:
 - Dockerfile
 - Rails initializer file (for setting up config.hosts)
 - Packer repository (for creating AMIs)
-- Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure, as well as deploy application updates through new AMIs)
+- Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure as well as rolling out application updates)
+
+Note: Generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
+
+Note: After infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
 
 
 
