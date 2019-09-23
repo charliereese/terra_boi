@@ -1,0 +1,41 @@
+{
+  "variables": {
+  	"DOCKERHUB_ACCESS_TOKEN": "",
+  	"DOCKERHUB_USERNAME": ""
+  },
+
+  "builders": [{
+    "type": "amazon-ebs",
+    "region": "us-east-2",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "ubuntu/images/*ubuntu-disco-19.04-amd64-server-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"],
+      "most_recent": true
+    },
+    "instance_type": "t2.micro",
+    "ssh_username": "ubuntu",
+    "ami_name": "<%= application_name %>-ec2 {{timestamp}}",
+    "tags": {
+    	"application": "<%= application_name %>-web-server"
+    }
+  }],
+
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "sleep 30"
+    ]
+  },
+	{
+		"type":"shell",
+		"environment_vars": [
+    	"DOCKERHUB_ACCESS_TOKEN={{user `DOCKERHUB_ACCESS_TOKEN`}}",
+    	"DOCKERHUB_USERNAME={{user `DOCKERHUB_USERNAME`}}"
+    ],
+		"script": "ami_build.sh"
+	}]
+}

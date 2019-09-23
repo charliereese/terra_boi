@@ -1,6 +1,7 @@
 module TerraBoi
 	class BoilerplateGenerator < Rails::Generators::Base
 		attr_accessor :application_name, :class_options
+		class_option :ruby_version, type: :string, default: "2.5.1"
 	  class_option :domain_name, type: :string, default: 'example.com'
 	  source_root File.expand_path('templates', __dir__)
 
@@ -25,6 +26,9 @@ module TerraBoi
 	  	generate "terra_boi:web_servers --domain_name #{class_options[:domain_name]}"
 	  	generate "terra_boi:data"
 	  	generate "terra_boi:state"
+	  	generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
+	  	generate "terra_boi:host_initializer --domain_name #{class_options[:domain_name]}"
+	  	generate "terra_boi:packer"
 	  end
 
 	end

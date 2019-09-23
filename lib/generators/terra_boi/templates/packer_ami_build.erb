@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Update to the latest current version of packages
+sudo apt-get update
+sudo apt -y install docker.io
+docker --version
+
+# # Start the Docker service
+sudo service docker start
+sudo usermod -aG docker ubuntu
+
+# # Automatically start Docker service when the system boots, i.e. when the EC2 instance created from this AMI is launched or rebooted
+sudo systemctl enable docker
+
+# Log in
+sudo docker login --username $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN
+
+# Run the container:
+# --restart=always i.e. always start the container when the EC2 instance created from this AMI is launched or rebooted
+# --detach , -d i.e. Run container in background and print container ID
+# sudo docker run --restart=always USERNAME/<%= application_name %>:latest
+sudo docker container run -p 3000:3000 --name <%= application_name %> --restart always -d $DOCKERHUB_USERNAME/<%= application_name %>:latest

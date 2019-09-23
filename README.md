@@ -19,6 +19,7 @@ List of items created by this gem's generators:
 ## Pre-requisites
 
 * [Terraform](https://www.terraform.io/) installed on your computer
+* [Packer](https://www.packer.io/downloads.html) installed on your computer
 * [Amazon Web Services (AWS) account](http://aws.amazon.com/)
 
 
@@ -57,7 +58,7 @@ Then run `source ~/.zprofile` (or equivalent command for your shell if not using
 
 To generate boilerplate infrastructure code (config.host initializer filer, Dockerfile, Packer repository, and terraform repository):
 
-`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM --dockerhub_image username/image:latest`
+`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM --ruby_version 2.5.1`
 
 ### Installation - Packer (creating web server AMIs)
 
@@ -69,11 +70,12 @@ Create private DockerHub repository for your rails application (if possible, use
 
 **B. Setup DockerHub access:**
 
-Add DockerHub access key to `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variable (if your image is in a private repository):
+Add DockerHub username and access key to `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variables (if your image is in a private repository):
 
 ```
+DOCKERHUB_USERNAME=myname
 DOCKERHUB_ACCESS_TOKEN=myAccessToken
-export DOCKERHUB_ACCESS_TOKEN
+export DOCKERHUB_USERNAME DOCKERHUB_ACCESS_TOKEN
 ```
 
 Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
@@ -146,7 +148,7 @@ Otherwise, `docker push [DOCKER_USERNAME]/[APPLICATION_NAME]:latest`. Make sure 
 ```
 cd packer 
 
-packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN application.json
+packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME application.json
 ```
 
 **C. Clean up:**
@@ -211,3 +213,19 @@ With that in mind, if you'd like to make a fix / change, please create a pull re
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+
+
+## Updating gem version (for maintainers)
+
+**1. Update version**
+
+In `lib/terra_boi/version.rb` update version.
+
+**2. Build gem**
+
+`gem build terra_boi.gemspec`
+
+**3. Push gem**
+
+`gem push terra_boi-X.X.X.gem` (replace X's with version)

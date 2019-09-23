@@ -1,0 +1,4 @@
+Rails.application.configure do
+	config.hosts << '.<%= class_options[:domain_name] %>'
+	config.hosts << /compute\.amazonaws\.com/
+end
