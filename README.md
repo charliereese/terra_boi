@@ -141,14 +141,14 @@ After these changes propogate (should take about an hour or two locally), your w
 
 You can automatically trigger DockerHub image builds when new code is pushed to a repository's master branch using DockerHub's free Github integration. 
 
-Otherwise, `docker push [DOCKER_USERNAME]/[APPLICATION_NAME]:latest`. Make sure you are pushing to a private repository.
+Otherwise, `docker build . && docker container create [IMAGE_ID] && docker commit [CONTAINER_ID] [DOCKER_USERNAME]/[APPLICATION_NAME]:latest && docker push [DOCKER_USERNAME]/[APPLICATION_NAME]:latest`. Make sure you are pushing to a private repository.
 
 **B. Create Packer AMI:**
 
 ```
 cd packer 
 
-packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME application.json
+packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME -var DB_PASSWORD=TF_VAR_db_password application.json
 ```
 
 **C. Clean up:**
@@ -229,3 +229,8 @@ In `lib/terra_boi/version.rb` update version.
 **3. Push gem**
 
 `gem push terra_boi-X.X.X.gem` (replace X's with version)
+
+**4. Tag GitHub**
+
+`git tag -a vX.X.X -m "Msg"`
+`git push --tags`

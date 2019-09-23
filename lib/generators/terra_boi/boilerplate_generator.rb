@@ -28,6 +28,7 @@ module TerraBoi
 	  	generate "terra_boi:state"
 	  	generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
 	  	generate "terra_boi:host_initializer --domain_name #{class_options[:domain_name]}"
+	  	generate "terra_boi:db_config"
 	  	generate "terra_boi:packer"
 	  end
 

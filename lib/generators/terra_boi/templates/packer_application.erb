@@ -1,7 +1,8 @@
 {
   "variables": {
   	"DOCKERHUB_ACCESS_TOKEN": "",
-  	"DOCKERHUB_USERNAME": ""
+  	"DOCKERHUB_USERNAME": "",
+  	"DB_PASSWORD": ""
   },
 
   "builders": [{
@@ -34,7 +35,8 @@
 		"type":"shell",
 		"environment_vars": [
     	"DOCKERHUB_ACCESS_TOKEN={{user `DOCKERHUB_ACCESS_TOKEN`}}",
-    	"DOCKERHUB_USERNAME={{user `DOCKERHUB_USERNAME`}}"
+    	"DOCKERHUB_USERNAME={{user `DOCKERHUB_USERNAME`}}",
+    	"DB_PASSWORD={{user `DB_PASSWORD`}}"
     ],
 		"script": "ami_build.sh"
 	}]
