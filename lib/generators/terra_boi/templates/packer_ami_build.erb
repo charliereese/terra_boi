@@ -6,8 +6,10 @@ sudo apt -y install docker.io
 docker --version
 
 # Set DB and DockerHub usernames
-export DB_PASSWORD=$DB_PASSWORD
-export DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME
+echo "DB_PASSWORD=$DB_PASSWORD" >> /etc/environment
+echo "DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" >> /etc/environment
+echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> /etc/environment
+echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> /etc/environment
 
 # # Start the Docker service
 sudo service docker start

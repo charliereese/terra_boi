@@ -1,0 +1,23 @@
+#!/bin/bash
+sleep 5
+
+# Set ENV vars from terraform
+echo "APPLICATION_NAME=${application_name}" >> /etc/environment
+echo "DB_HOST=${db_address}" >> /etc/environment
+echo "DB_USERNAME=${db_username}" >> /etc/environment
+echo "RAILS_ENV=production" >> /etc/environment
+echo "INFRASTRUCTURE_ENV=${env}" >> /etc/environment
+
+# Set DB environment variables in docker container and
+# start rails container
+sudo docker container run -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
+-e DB_HOST=$DB_HOST \
+-e DB_USERNAME=$DB_USERNAME \
+-e RAILS_ENV=$RAILS_ENV \
+-e INFRASTRUCTURE_ENV=$INFRASTRUCTURE_ENV \
+-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+$DOCKERHUB_USERNAME/$APPLICATION_NAME:latest
+
+# Run outstanding DB migrations
+docker container exec $APPLICATION_NAME RAILS_ENV=$RAILS_ENV rake db:migrate

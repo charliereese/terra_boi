@@ -36,5 +36,13 @@ module TerraBoi
 	  		env: ['staging', 'prod']
 	  	})
 	  end
+
+	  def create_user_data_terraform_file
+	  	generate_terraform_files({
+	  		template: 'web_servers_user_data.erb',
+	  		file_path: 'web_servers/user-data.sh',
+	  		env: ['staging', 'prod']
+	  	})
+	  end
 	end
 end

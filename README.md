@@ -54,6 +54,8 @@ export AWS_SECRET_ACCESS_KEY=your_secret_access_key
 
 Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
 
+Note: SSH access to created EC2 instances is granted using SSH keys existing at `~/.ssh/id_rsa.pub` and `~/.ssh/id_rsa` on your local machine. If they do not exist, create them.
+
 ### Installation - generate infrastructure code
 
 To generate boilerplate infrastructure code (config.host initializer filer, Dockerfile, Packer repository, and terraform repository):
@@ -168,6 +170,16 @@ To deploy infrastructure to AWS:
 ```
 terraform init # IF NOT ALREADY RUN
 terraform apply
+```
+
+### Usage - ssh access
+
+ssh into ec2 instance and run bash in container:
+
+```
+ssh ubuntu@PUBLICIPOFINSTANCE
+
+docker container exec -it APP_NAME bash
 ```
 
 
