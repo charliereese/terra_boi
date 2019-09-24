@@ -150,7 +150,7 @@ Otherwise, `docker build . && docker container create [IMAGE_ID] && docker commi
 ```
 cd packer 
 
-packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME -var DB_PASSWORD=TF_VAR_db_password application.json
+packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME -var DB_PASSWORD=$TF_VAR_db_password -var AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -var AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY application.json
 ```
 
 **C. Clean up:**
