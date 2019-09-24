@@ -3,6 +3,11 @@ output "address" {
   description = "Connect to the database at this endpoint"
 }
 
+output "db_username" {
+  value       = module.db_and_s3.db_username
+  description = "DB username"
+}
+
 output "port" {
   value       = module.db_and_s3.port
   description = "The port the database is listening on"

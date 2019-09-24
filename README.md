@@ -232,5 +232,7 @@ In `lib/terra_boi/version.rb` update version.
 
 **4. Tag GitHub**
 
+`git add -A`
+`git commit -m "Msg"`
 `git tag -a vX.X.X -m "Msg"`
 `git push --tags`

@@ -17,12 +17,13 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "webserver_cluster" {
-  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.7"
+  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.11"
 
   instance_type       = "t2.micro"
   env                 = "<%= config[:env] %>"
   app_name            = "<%= application_name %>"
   domain_name         = "<%= config[:domain_name] %>"
+  id_rsa_pub					= "<%= id_rsa_pub %>"
   min_size            = 1
   max_size            = 1
   business_hours_size = 1

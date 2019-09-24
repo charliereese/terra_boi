@@ -2,7 +2,7 @@ require "generators/extensions"
 
 module TerraBoi
 	class WebServersGenerator < Rails::Generators::Base
-	  attr_accessor :application_name, :class_options
+	  attr_accessor :application_name, :id_rsa_pub, :class_options
 	  class_option :domain_name, type: :string
 	  source_root File.expand_path('templates', __dir__)
 
@@ -17,6 +17,7 @@ module TerraBoi
 	  def init
 	  	# defined in lib/generators/extensions
 	  	self.application_name = generate_application_name
+	  	self.id_rsa_pub = open(ENV['HOME'] + "/.ssh/id_rsa.pub").read.chomp
 	  	self.class_options = options
 	  end
 
