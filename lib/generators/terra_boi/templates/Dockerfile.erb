@@ -33,6 +33,7 @@ RUN bundle install
 ADD . $APP_HOME
 
 RUN yarn install --check-files
+RUN RAILS_ENV=production rails assets:precompile
 
 EXPOSE 3000
 
