@@ -1,6 +1,9 @@
 Rails.application.configure do
 	config.hosts << '.<%= class_options[:domain_name] %>'
 	config.hosts << '.amazonaws.com'
+	
 	# Allow AWS health checks
 	config.hosts << /^\d+\.\d+\.\d+\.\d+/
+
+	config.hosts << '.example.com' if ENV['RAILS_ENV'] == 'test'
 end
