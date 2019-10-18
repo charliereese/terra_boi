@@ -1,0 +1,14 @@
+output "master_worker_ip_address" {
+  value       = module.master_worker_cluster.master_worker_ip_address
+  description = "The domain name of the application load balancer"
+}
+
+output "master_worker_id" {
+  value       = module.master_worker_cluster.master_worker_id
+  description = "The ID of the master worker"
+}
+
+output "master_worker_arn" {
+  value       = module.master_worker_cluster.master_worker_arn
+  description = "The ARN of the master worker"
+}

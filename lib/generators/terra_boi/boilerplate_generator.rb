@@ -31,6 +31,7 @@ module TerraBoi
 	  	generate "terra_boi:db_config"
 	  	generate "terra_boi:data_config"
 	  	generate "terra_boi:packer"
+	  	generate "terra_boi:master_worker"
 	  end
 
 	end

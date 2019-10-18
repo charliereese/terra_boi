@@ -1,6 +1,6 @@
 # TerraBoi
 
-This ruby gem was created by [Charlie Reese](https://charliereese.ca/about) to get rails applications deployed into production as quickly and easily as possible.
+This ruby gem was created by [Charlie Reese](https://charliereese.ca/about) at [Clientelify](https://clientelify.com) to get rails applications deployed into production as quickly and easily as possible.
 
 **Raison d'etre**: creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
 

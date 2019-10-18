@@ -17,7 +17,7 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "webserver_cluster" {
-  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.21"
+  source = "github.com/charliereese/terraform_modules//web_servers?ref=v0.0.23"
 
   instance_type       	= "t2.micro"
   env                 	= "<%= config[:env] %>"

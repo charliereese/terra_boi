@@ -15,7 +15,7 @@ module TerraBoi
 					"terraform/#{env}/#{args[:file_path]}",
 					{
 						env: env,
-						domain_name: class_options[:domain_name]
+						domain_name: (class_options && class_options[:domain_name]) || generate_application_name + '.com'
 					}
 				)
 			end
