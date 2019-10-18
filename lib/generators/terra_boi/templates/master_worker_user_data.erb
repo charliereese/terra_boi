@@ -12,9 +12,9 @@ echo "INFRASTRUCTURE_ENV=${env}" >> /etc/environment
 for line in $( cat /etc/environment ); do export $line; done
 
 # Set DB environment variables in docker container and
-# start rails container
-docker container run -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
---entrypoint 'whenever --update-crontab' \
+# start rake jobs:work
+# https://medium.com/@oprearocks/how-to-properly-override-the-entrypoint-using-docker-run-2e081e5feb9d
+docker container run --entrypoint "rake" -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
 -e DB_HOST=$DB_HOST \
 -e DB_USERNAME=$DB_USERNAME \
 -e DB_PASSWORD=$DB_PASSWORD \
@@ -24,8 +24,11 @@ docker container run -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
 -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
 -e RAILS_MASTER_KEY=$RAILS_MASTER_KEY \
 -e RAILS_SERVE_STATIC_FILES=true \
-$DOCKERHUB_USERNAME/$APPLICATION_NAME:latest
+$DOCKERHUB_USERNAME/$APPLICATION_NAME:latest jobs:work
 
 # Run outstanding DB migrations
 docker container exec $APPLICATION_NAME rake db:migrate
-docker container exec $APPLICATION_NAME RAILS_ENV=production bin/delayed_job start
+
+# Update and run cron
+docker container exec $APPLICATION_NAME whenever --update-crontab
+docker container exec $APPLICATION_NAME service cron start
