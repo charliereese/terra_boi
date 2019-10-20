@@ -34,6 +34,7 @@ ADD . $APP_HOME
 
 RUN yarn install --check-files
 RUN RAILS_ENV=production rails assets:precompile
+RUN service cron start
 
 EXPOSE 3000
 

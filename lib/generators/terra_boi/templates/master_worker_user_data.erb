@@ -31,4 +31,3 @@ docker container exec $APPLICATION_NAME rake db:migrate
 
 # Update and run cron
 docker container exec $APPLICATION_NAME whenever --update-crontab
-docker container exec $APPLICATION_NAME service cron start
