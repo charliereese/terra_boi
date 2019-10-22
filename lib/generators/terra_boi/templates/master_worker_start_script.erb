@@ -1,0 +1,12 @@
+#!/bin/sh
+# Master worker entrypoint for staging and prod docker containers
+
+rake db:migrate
+
+# Fix link-count, as cron is being a pain, and docker is making hardlink count > 0 (very high)
+touch /etc/crontab /etc/cron.*/*
+
+service cron start
+whenever --update-crontab
+
+rake jobs:work

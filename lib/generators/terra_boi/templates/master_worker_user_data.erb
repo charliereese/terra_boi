@@ -14,7 +14,7 @@ for line in $( cat /etc/environment ); do export $line; done
 # Set DB environment variables in docker container and
 # start rake jobs:work
 # https://medium.com/@oprearocks/how-to-properly-override-the-entrypoint-using-docker-run-2e081e5feb9d
-docker container run --entrypoint "rake" -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
+docker container run --entrypoint "./scripts/start_master_worker.sh" -p 3000:3000 --name $APPLICATION_NAME --restart always -d \
 -e DB_HOST=$DB_HOST \
 -e DB_USERNAME=$DB_USERNAME \
 -e DB_PASSWORD=$DB_PASSWORD \
@@ -24,10 +24,4 @@ docker container run --entrypoint "rake" -p 3000:3000 --name $APPLICATION_NAME -
 -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
 -e RAILS_MASTER_KEY=$RAILS_MASTER_KEY \
 -e RAILS_SERVE_STATIC_FILES=true \
-$DOCKERHUB_USERNAME/$APPLICATION_NAME:latest jobs:work
-
-# Run outstanding DB migrations
-docker container exec $APPLICATION_NAME rake db:migrate
-
-# Update and run cron
-docker container exec $APPLICATION_NAME whenever --update-crontab
+$DOCKERHUB_USERNAME/$APPLICATION_NAME:latest

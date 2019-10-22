@@ -247,4 +247,4 @@ In `lib/terra_boi/version.rb` update version.
 `git add -A`
 `git commit -m "Msg"`
 `git tag -a vX.X.X -m "Msg"`
-`git push --tags`
+`git push && git push --tags`

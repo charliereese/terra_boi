@@ -1,4 +1,5 @@
 require "generators/extensions"
+require 'fileutils'
 
 module TerraBoi
 	class MasterWorkerGenerator < Rails::Generators::Base
@@ -42,6 +43,12 @@ module TerraBoi
 	  		file_path: 'master_worker/user-data.sh',
 	  		env: ['staging', 'prod']
 	  	})
+	  end
+
+	  def create_master_worker_docker_entrypoint_script
+	  	filename = "scripts/start_master_worker.sh"
+	  	template "master_worker_start_script.erb", filename
+			FileUtils.chmod 0755, filename 	
 	  end
 	end
 end
