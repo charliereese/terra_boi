@@ -17,7 +17,7 @@ terraform {
 # -------------------------------------------------------------------
 
 module "master_worker_cluster" {
-  source = "github.com/charliereese/terraform_modules//master_worker?ref=v0.0.23"
+  source = "github.com/charliereese/terraform_modules//master_worker?ref=v0.0.24"
 
   instance_type       	= "t2.micro"
   env                 	= "<%= config[:env] %>"
