@@ -21,7 +21,7 @@ List of items created by this gem's generators:
 * [Terraform](https://www.terraform.io/) installed on your computer
 * [Packer](https://www.packer.io/downloads.html) installed on your computer
 * [Amazon Web Services (AWS) account](http://aws.amazon.com/)
-
+* Rails app returns 200 response at "/health-check" (`def health_check; head :ok; end`)
 
 
 ## Installation
