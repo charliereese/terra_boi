@@ -1,49 +1,49 @@
 {
-  "variables": {
-  	"DOCKERHUB_ACCESS_TOKEN": "",
-  	"DOCKERHUB_USERNAME": "",
-  	"DB_PASSWORD": ""
-  },
+	"variables": {
+		"DOCKERHUB_ACCESS_TOKEN": "",
+		"DOCKERHUB_USERNAME": "",
+		"DB_PASSWORD": ""
+	},
 
-  "builders": [{
-    "type": "amazon-ebs",
-    "region": "us-east-2",
-    "source_ami_filter": {
-      "filters": {
-        "virtualization-type": "hvm",
-        "name": "ubuntu/images/*ubuntu-disco-19.04-amd64-server-*",
-        "root-device-type": "ebs"
-      },
-      "owners": ["099720109477"],
-      "most_recent": true
-    },
-    "instance_type": "t2.micro",
-    "ssh_username": "ubuntu",
-    "ami_name": "<%= application_name %>-ec2 {{timestamp}}",
-    "tags": {
-    	"application": "<%= application_name %>-web-server"
-    }
-  }],
+	"builders": [{
+		"type": "amazon-ebs",
+		"region": "us-east-2",
+		"source_ami_filter": {
+			"filters": {
+				"virtualization-type": "hvm",
+				"name": "ubuntu/images/*ubuntu-bionic-18.04-amd64-server-*",
+				"root-device-type": "ebs"
+			},
+			"owners": ["099720109477"],
+			"most_recent": true
+		},
+		"instance_type": "t2.micro",
+		"ssh_username": "ubuntu",
+		"ami_name": "<%= application_name %>-ec2 {{timestamp}}",
+		"tags": {
+			"application": "<%= application_name %>-web-server"
+		}
+	}],
 
-  "provisioners": [{
-    "type": "file",
-    "source": "../config/master.key",
-    "destination": "/tmp/master.key"
-  },{
-    "type": "shell",
-    "inline": [
-      "sleep 30"
-    ]
-  },
+	"provisioners": [{
+		"type": "file",
+		"source": "../config/master.key",
+		"destination": "/tmp/master.key"
+	},{
+		"type": "shell",
+		"inline": [
+			"sleep 30"
+		]
+	},
 	{
 		"type":"shell",
 		"environment_vars": [
-    	"DOCKERHUB_ACCESS_TOKEN={{user `DOCKERHUB_ACCESS_TOKEN`}}",
-    	"DOCKERHUB_USERNAME={{user `DOCKERHUB_USERNAME`}}",
-    	"DB_PASSWORD={{user `DB_PASSWORD`}}",
-    	"AWS_ACCESS_KEY_ID={{user `AWS_ACCESS_KEY_ID`}}",
-    	"AWS_SECRET_ACCESS_KEY={{user `AWS_SECRET_ACCESS_KEY`}}"
-    ],
+			"DOCKERHUB_ACCESS_TOKEN={{user `DOCKERHUB_ACCESS_TOKEN`}}",
+			"DOCKERHUB_USERNAME={{user `DOCKERHUB_USERNAME`}}",
+			"DB_PASSWORD={{user `DB_PASSWORD`}}",
+			"AWS_ACCESS_KEY_ID={{user `AWS_ACCESS_KEY_ID`}}",
+			"AWS_SECRET_ACCESS_KEY={{user `AWS_SECRET_ACCESS_KEY`}}"
+		],
 		"script": "ami_build.sh"
 	}]
 }
