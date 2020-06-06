@@ -127,14 +127,14 @@ GEM
       thread_safe (~> 0.1)
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.4)
+    websocket-extensions (0.1.5)
     zeitwerk (2.1.10)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  rails (~> 6.0.0)
+  rails (~> 6.0, >= 6.0.0)
   terra_boi!
 
 BUNDLED WITH
