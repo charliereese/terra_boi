@@ -1,0 +1,12 @@
+provider "aws" {
+	version = "~> 2.0"
+	region  = var.region
+}
+
+# --------------------------------------
+# 1. ECR Repository
+# --------------------------------------
+
+resource "aws_ecr_repository" "ecr_repo" {
+	name = "${var.app_name}-ecr-repo"
+}
