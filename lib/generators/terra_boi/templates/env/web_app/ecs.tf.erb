@@ -1,0 +1,49 @@
+# --------------------------------------
+# 1. STATE
+# --------------------------------------
+
+terraform {
+	backend "s3" {
+		bucket         = "<%= application_name %>-terraform-state-storage"
+		key            = "terraform/<%= config[:env] %>-state/terra-boi-ecs-service-web-app"
+		region         = "us-east-2"
+		dynamodb_table = "<%= application_name %>-terraform-state-lock"
+		encrypt        = true
+	}
+}
+
+# --------------------------------------
+# 2. Cluster
+# --------------------------------------
+
+module "web_app" {
+	source = "../../lib/terraform_modules/ecs_web_app"
+
+	app_name    = "<%= application_name %>"
+	environment = "<%= config[:env] %>"
+	app_type    = "web_app"
+	db_password = var.db_password
+	aws_access_key = var.aws_access_key
+	aws_secret_key = var.aws_secret_key
+}
+
+output "ecs_service_name" {
+	value = module.web_app.ecs_service_name
+}
+
+output "ecs_cluster_name" {
+	value = module.web_app.ecs_cluster_name
+}
+
+variable "db_password" {
+	description = "The password for the database"
+	type        = string
+}
+
+variable "aws_access_key" {
+	type        = string
+}
+
+variable "aws_secret_key" {
+	type        = string
+}

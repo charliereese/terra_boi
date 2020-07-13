@@ -1,8 +1,9 @@
 module TerraBoi
 	class BoilerplateGenerator < Rails::Generators::Base
 		attr_accessor :application_name, :class_options
-		class_option :ruby_version, type: :string, default: "2.5.1"
-		class_option :domain_name, type: :string, default: 'example.com'
+		class_option :ruby_version, type: :string, default: "2.7.1", aliases: ["r"]
+		class_option :domain_name, type: :string, default: 'example.com', aliases: ["d"]
+		class_option :envs, type: :array, default: ['staging', 'prod'], aliases: ["e"]
 		source_root File.expand_path('templates', __dir__)
 
 		desc (<<-EOF
@@ -12,7 +13,13 @@ module TerraBoi
 			DB + load balancer + zero downtime, scalable web app 
 			launch config + S3 bucket.
 
-			To execute, run rails generate terra_boi:boilerplate --domain_name example.com
+			To execute, run rails g terra_boi:boilerplate --domain_name example.com --ruby_version 2.7.1 --envs staging prod
+
+			OR
+
+			rails g terra_boi:boilerplate --d example.com --r 2.7.1 -e staging prod
+
+			Note: --ruby_version option is for base Dockerfile ruby image. Defaults to 2.7.1.
 			EOF
 			.gsub(/[\t]/, '')
 		)
@@ -23,15 +30,14 @@ module TerraBoi
 		end
 
 		def run_other_generators
-			generate "terra_boi:ecr"
-			# generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
+			generate "terra_boi:tf_ecr"
+			generate "terra_boi:tf_lib"
+			generate "terra_boi:tf_env --envs #{class_options[:envs].join(' ')}"
+			generate "terra_boi:tf_state"
+			generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
 			# generate "terra_boi:host_initializer
 			# generate "terra_boi:db_config"
 			# generate "terra_boi:data_config"
-			# generate "terra_boi:state"
-			# generate "terra_boi:data"
-			# generate "terra_boi:web_servers
-			# generate "terra_boi:master_worker"
 		end
 
 	end

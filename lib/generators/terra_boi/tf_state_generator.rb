@@ -1,7 +1,7 @@
 require "generators/extensions"
 
 module TerraBoi
-	class StateGenerator < Rails::Generators::Base
+	class TfStateGenerator < Rails::Generators::Base
 		attr_accessor :application_name
 		source_root File.expand_path('templates', __dir__)
 

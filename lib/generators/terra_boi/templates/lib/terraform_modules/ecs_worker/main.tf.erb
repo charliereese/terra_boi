@@ -1,0 +1,120 @@
+provider "aws" {
+  version = "~> 2.0"
+  region  = var.region
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 1. ECS TASK
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "aws_ecr_repository" "ecr_repo" {
+  name = "${var.app_name}-ecr-repo"
+}
+
+data "aws_ecs_cluster" "ecs_cluster" {
+  cluster_name = "${var.app_name}-${var.environment}"
+}
+
+data "terraform_remote_state" "db" {
+  backend = "s3"
+
+  config = {
+    bucket = "${var.app_name}-terraform-state-storage"
+    key    = "terraform/${var.environment}-state/terra-boi-data"
+    region = "us-east-2"
+  }
+}
+
+data "template_file" "task" {
+  template = "${file("../../lib/task_templates/${var.template_filename}")}"
+
+  vars = {
+    image       = data.aws_ecr_repository.ecr_repo.repository_url
+    app_name    = var.app_name
+    app_type    = var.app_type
+    environment = var.environment
+    region      = var.region
+    memory      = var.worker_task.memory
+    cpu         = var.worker_task.cpu
+    db_host     = data.terraform_remote_state.db.outputs.address
+    db_username = data.terraform_remote_state.db.outputs.db_username
+    db_password = var.db_password
+    aws_access_key = var.aws_access_key
+    aws_secret_key = var.aws_secret_key
+  }
+}
+
+resource "aws_ecs_task_definition" "web_app" {
+  family                   = var.app_type           # Naming our first task
+  requires_compatibilities = ["FARGATE"]            # Stating that we are using ECS Fargate
+  network_mode             = "awsvpc"               # Using awsvpc as our network mode as this is required for Fargate
+  memory                   = var.worker_task.memory # Specifying the memory our container requires
+  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+  cpu                   = var.worker_task.cpu # Specifying the CPU our container requires
+  task_role_arn         = data.aws_iam_role.ecs_execution_role.arn
+  execution_role_arn    = data.aws_iam_role.ecs_execution_role.arn
+  container_definitions = data.template_file.task.rendered
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 2. ECS SERVICE
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_ecs_service" "app" {
+  name            = var.app_type                        # Naming our first service
+  cluster         = data.aws_ecs_cluster.ecs_cluster.id # Referencing our created Cluster
+  task_definition = aws_ecs_task_definition.web_app.arn # Referencing the task our service will spin up
+  launch_type     = "FARGATE"
+  desired_count   = var.worker_task.desired_count
+
+  network_configuration {
+    subnets          = [aws_default_subnet.default_subnet_a.id, aws_default_subnet.default_subnet_b.id, aws_default_subnet.default_subnet_c.id]
+    assign_public_ip = true
+    security_groups  = [aws_security_group.service_security_group.id]
+  }
+
+  depends_on = [aws_cloudwatch_log_group.logs]
+}
+
+resource "aws_security_group" "service_security_group" {
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 3. REFERENCE NETWORK RESOURCES (to default VPC)
+# ---------------------------------------------------------------------------------------------------------------------
+
+# # Providing a reference to our default VPC
+resource "aws_default_vpc" "default_vpc" {
+}
+
+# Providing a reference to our default subnets
+resource "aws_default_subnet" "default_subnet_a" {
+  availability_zone = "${var.region}a"
+}
+
+resource "aws_default_subnet" "default_subnet_b" {
+  availability_zone = "${var.region}b"
+}
+
+resource "aws_default_subnet" "default_subnet_c" {
+  availability_zone = "${var.region}c"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 4. Logging
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_cloudwatch_log_group" "logs" {
+  name              = "/fargate/service/${var.app_name}-${var.environment}-${var.app_type}"
+  retention_in_days = 90
+
+  tags = {
+    app = var.app_name
+  }
+}

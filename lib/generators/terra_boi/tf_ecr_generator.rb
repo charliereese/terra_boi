@@ -1,7 +1,7 @@
 require "generators/extensions"
 
 module TerraBoi
-	class EcrGenerator < Rails::Generators::Base
+	class TfEcrGenerator < Rails::Generators::Base
 		attr_accessor :application_name
 		source_root File.expand_path('templates', __dir__)
 

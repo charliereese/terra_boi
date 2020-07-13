@@ -1,0 +1,54 @@
+[
+	{
+		"name": "web_app",
+		"image": "${image}",
+		"entryPoint": ["sh", "-c", "rake db:migrate && bin/rails server --port 3000 -b 0.0.0.0"],
+		"essential": true,
+		"portMappings": [
+			{
+				"containerPort": ${port},
+				"hostPort": ${port}
+			}
+		],
+		"environment": [
+			{
+				"name": "RAILS_ENV",
+				"value": "production"
+			},
+			{
+				"name": "DB_HOST",
+				"value": "${db_host}"
+			},
+			{
+				"name": "DB_USERNAME",
+				"value": "${db_username}"
+			},
+			{
+				"name": "DB_PASSWORD",
+				"value": "${db_password}"
+			},
+			{
+				"name": "AWS_ACCESS_KEY_ID",
+				"value": "${aws_access_key}"
+			},
+			{
+				"name": "AWS_SECRET_ACCESS_KEY",
+				"value": "${aws_secret_key}"
+			},
+			{
+				"name": "RAILS_SERVE_STATIC_FILES",
+				"value": "true"
+			}
+		],
+		"memory": ${memory},
+		"cpu": ${cpu},
+		"logConfiguration": {
+			"logDriver": "awslogs",
+			"options": {
+				"awslogs-group": "/fargate/service/${app_name}-${environment}-${app_type}",
+				"awslogs-region": "${region}",
+				"awslogs-stream-prefix": "ecs"
+			}
+		}
+	}
+]

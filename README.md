@@ -248,3 +248,53 @@ In `lib/terra_boi/version.rb` update version.
 `git commit -m "Msg"`
 `git tag -a vX.X.X -m "Msg"`
 `git push && git push --tags`
+
+
+#### TBU: Steps for V1.0.0 TBU
+
+A) Set and export terraform AWS and data-related environment variables in .zprofile (or your respective shell dotfile)
+
+```
+TF_VAR_db_password=your_password # whatever you want it to be
+TF_VAR_db_username=your_username # whatever you want it to be
+export TF_VAR_db_password TF_VAR_db_username 
+
+AWS_ACCESS_KEY=your_access_key
+TF_VAR_aws_access_key=$AWS_ACCESS_KEY
+export AWS_ACCESS_KEY TF_VAR_aws_access_key
+
+AWS_SECRET_KEY=your_secret_access_key
+TF_VAR_aws_secret_key=$AWS_SECRET_KEY
+export AWS_SECRET_KEY TF_VAR_aws_secret_key
+```
+
+B) Deploy ecr and data infra:
+
+```
+rails g terra_boi:boilerplate -d YOUR_DOMAIN_NAME.COM
+
+cd terraform_v2/ecr 
+terraform init && terraform apply
+
+# For each env:
+
+cd terraform_v2/staging/data
+terraform init && terraform apply
+
+```
+
+C) Push Docker container to ecr:
+
+```
+./terraform_v2/lib/scripts/push_to_ecr.sh
+```
+
+D) Provision ecs_cluster, web_app, and worker:
+
+```
+cd terraform_v2/staging/ecs_cluster
+terraform init && terraform apply
+
+cd terraform_v2/staging/web_app
+terraform init && terraform apply
+```
