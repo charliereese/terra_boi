@@ -43,9 +43,8 @@ module TerraBoi
 			class_options[:envs].each do |env|
 				TEMPLATES.each do |dir, file_arr|
 					file_arr.each do |filename|
-						template "env/#{dir}/#{filename}.erb", "terraform_v2/#{env}/#{dir}/#{filename}", {
+						template "env/#{dir}/#{filename}.erb", "terraform/#{env}/#{dir}/#{filename}", {
 							env: env,
-							domain_name: (class_options && class_options[:domain_name]) || generate_application_name + '.com',
 						}
 					end
 				end

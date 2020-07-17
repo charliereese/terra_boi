@@ -35,6 +35,10 @@ output "ecs_cluster_name" {
 	value = module.web_app.ecs_cluster_name
 }
 
+output "alb_dns" {
+	value = module.web_app.alb_dns
+}
+
 variable "db_password" {
 	description = "The password for the database"
 	type        = string

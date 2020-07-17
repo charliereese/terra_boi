@@ -8,7 +8,7 @@ module TerraBoi
 		desc (<<-EOF
 			Generate DB and S3 bucket for storing and locking terraform state
 			
-			To execute, run rails generate terra_boi:state
+			To execute, run rails generate terra_boi:tf_state
 			EOF
 			.gsub(/\t/, '')
 		)
@@ -18,7 +18,7 @@ module TerraBoi
 		end
 
 		def create_main_terraform_file
-			template "state_main.erb", "terraform_v2/state/main.tf"
+			template "state_main.erb", "terraform/state/main.tf"
 		end
 	end
 end

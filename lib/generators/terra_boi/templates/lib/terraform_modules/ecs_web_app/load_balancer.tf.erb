@@ -23,6 +23,13 @@ resource "aws_security_group" "load_balancer_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port = 443
+    to_port = 443
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port = 0
     to_port = 0
@@ -43,6 +50,8 @@ resource "aws_lb_target_group" "target_group" {
   vpc_id = aws_default_vpc.default_vpc.id
 }
 
+# 2.1 HTTP:
+
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_alb.application_load_balancer.arn
   port = 80
@@ -52,4 +61,32 @@ resource "aws_lb_listener" "listener" {
     type = "forward"
     target_group_arn = aws_lb_target_group.target_group.arn
   }
+}
+
+# 2.2 HTTPS:
+
+resource "aws_lb_listener" "listener_https" {
+  load_balancer_arn = aws_alb.application_load_balancer.arn
+  port = 443
+  protocol = "HTTPS"
+  certificate_arn   = aws_acm_certificate_validation.cert.certificate_arn
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+}
+
+# ----------------------------------------------
+# 3. HTTPS CERT
+# ----------------------------------------------
+
+data "aws_acm_certificate" "cert" {
+  domain      = "*.${var.domain_name}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  certificate_arn = data.aws_acm_certificate.cert.arn
 }

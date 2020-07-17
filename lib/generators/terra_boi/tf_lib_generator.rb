@@ -2,7 +2,8 @@ require "generators/extensions"
 
 module TerraBoi
 	class TfLibGenerator < Rails::Generators::Base
-		attr_accessor :application_name
+		attr_accessor :application_name, :class_options
+		class_option :domain_name, type: :string, default: 'example.com', aliases: ["d"]
 		source_root File.expand_path('templates', __dir__)
 
 		TEMPLATES = {
@@ -34,7 +35,7 @@ module TerraBoi
 		desc (<<-EOF
 			Generate lib directory with templates, scripts, and modules for deploying application containers to AWS ECS
 			
-			To execute, run rails generate terra_boi:lib
+			To execute, run rails generate terra_boi:tf_lib
 			EOF
 			.gsub(/\t/, '')
 		)
@@ -42,12 +43,13 @@ module TerraBoi
 		def init
 			# defined in lib/generators/extensions
 			self.application_name = generate_application_name
+			self.class_options = options
 		end
 
 		def create_ecr
 			TEMPLATES.each do |dir, file_arr|
 				file_arr.each do |filename|
-					template "lib/#{dir}/#{filename}.erb", "terraform_v2/lib/#{dir}/#{filename}" 
+					template "lib/#{dir}/#{filename}.erb", "terraform/lib/#{dir}/#{filename}" 
 				end
 			end
 		end

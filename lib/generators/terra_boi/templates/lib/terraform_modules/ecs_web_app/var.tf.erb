@@ -42,6 +42,11 @@ variable "aws_secret_key" {
   type        = string
 }
 
+variable "domain_name" {
+  type    = string
+  default = "<%= class_options[:domain_name] %>"
+}
+
 # -----------------------------
 # 2. WEB APP TASK
 # -----------------------------

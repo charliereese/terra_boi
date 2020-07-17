@@ -29,7 +29,7 @@ module "head_worker" {
   worker_task = {
     memory        = 512
     cpu           = 256
-    desired_count = 1
+    desired_count = 1 # Should always be 1. If increased, cron jobs will run multiple times. If you need more workers, create a new fargate task for your child_worker (using the same ecs_worker source) with the entrypoint ["sh", "-c", "rake db:migrate && rake jobs:work"]
   }
 }
 

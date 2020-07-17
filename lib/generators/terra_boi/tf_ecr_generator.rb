@@ -8,7 +8,7 @@ module TerraBoi
 		desc (<<-EOF
 			Generate AWS Elastic Container Registry (for storing container images)
 			
-			To execute, run rails generate terra_boi:ecr
+			To execute, run rails generate terra_boi:tf_ecr
 			EOF
 			.gsub(/\t/, '')
 		)
@@ -19,10 +19,10 @@ module TerraBoi
 		end
 
 		def create_ecr
-			template "ecr/ecs_role.tf.erb", "terraform_v2/ecr/ecs_role.tf"
-			template "ecr/main.tf.erb", "terraform_v2/ecr/main.tf"
-			template "ecr/output.tf.erb", "terraform_v2/ecr/output.tf"
-			template "ecr/var.tf.erb", "terraform_v2/ecr/var.tf"
+			template "ecr/ecs_role.tf.erb", "terraform/ecr/ecs_role.tf"
+			template "ecr/main.tf.erb", "terraform/ecr/main.tf"
+			template "ecr/output.tf.erb", "terraform/ecr/output.tf"
+			template "ecr/var.tf.erb", "terraform/ecr/var.tf"
 		end
 	end
 end

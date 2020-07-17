@@ -30,9 +30,10 @@ module TerraBoi
 		end
 
 		def run_other_generators
+			generate "terra_boi:tf_cert -d #{class_options[:domain_name]}"
 			generate "terra_boi:tf_ecr"
-			generate "terra_boi:tf_lib"
-			generate "terra_boi:tf_env --envs #{class_options[:envs].join(' ')}"
+			generate "terra_boi:tf_lib -d #{class_options[:domain_name]}"
+			generate "terra_boi:tf_env -e #{class_options[:envs].join(' ')} -d #{class_options[:domain_name]}"
 			generate "terra_boi:tf_state"
 			generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
 			# generate "terra_boi:host_initializer

@@ -2,7 +2,7 @@
 	{
 		"name": "web_app",
 		"image": "${image}",
-		"entryPoint": ["sh", "-c", "rake db:migrate && bin/rails server --port 3000 -b 0.0.0.0"],
+		"entryPoint": ["sh", "-c", "rake db:migrate && touch /etc/crontab /etc/cron.*/* && service cron start && whenever --update-crontab && rake jobs:work"],
 		"essential": true,
 		"environment": [
 			{
@@ -28,6 +28,10 @@
 			{
 				"name": "AWS_SECRET_ACCESS_KEY",
 				"value": "${aws_secret_key}"
+			},
+			{
+				"name": "RAILS_LOG_TO_STDOUT",
+				"value": "true"
 			},
 			{
 				"name": "RAILS_SERVE_STATIC_FILES",

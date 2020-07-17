@@ -250,7 +250,7 @@ In `lib/terra_boi/version.rb` update version.
 `git push && git push --tags`
 
 
-#### TBU: Steps for V1.0.0 TBU
+#### TBU: Steps for Provisioning Infra
 
 A) Set and export terraform AWS and data-related environment variables in .zprofile (or your respective shell dotfile)
 
@@ -268,33 +268,89 @@ TF_VAR_aws_secret_key=$AWS_SECRET_KEY
 export AWS_SECRET_KEY TF_VAR_aws_secret_key
 ```
 
-B) Deploy ecr and data infra:
+B) Generate boilerplate and mark scripts executable
 
 ```
-rails g terra_boi:boilerplate -d YOUR_DOMAIN_NAME.COM
+rails g terra_boi:boilerplate -d DOMAIN.com -r 2.7.1
 
-cd terraform_v2/ecr 
+chmod +x ./terraform/lib/scripts/*
+```
+
+C) Deploy state:
+
+```
+cd terraform/state
+terraform init && terraform apply
+```
+
+D) Deploy cert for HTTPS:
+
+```
+cd terraform/cert
 terraform init && terraform apply
 
-# For each env:
+# Go to AWS Certificate Manager in AWS Console
+# Expand issued certificate for your domain, and find CNAME record for domain validation
+# Add CNAME record to your domain (e.g. log into where you purchased your domain, and add CNAME record to it)
+```
 
-cd terraform_v2/staging/data
+E) Deploy ecr and data infra:
+
+```
+cd terraform/ecr 
+terraform init && terraform apply
+
+# For each env (e.g. staging, prod):
+cd terraform/ENV/data
 terraform init && terraform apply
 
 ```
 
-C) Push Docker container to ecr:
+F) Push Docker container to ecr:
 
 ```
-./terraform_v2/lib/scripts/push_to_ecr.sh
+./terraform/lib/scripts/push_to_ecr.sh
+# If out of memory, run: docker system prune -a, then try running the command again
 ```
 
-D) Provision ecs_cluster, web_app, and worker:
+G) Provision ecs_cluster, web_app, and worker:
 
 ```
-cd terraform_v2/staging/ecs_cluster
+# For each env (e.g. staging, prod):
+
+cd terraform/ENV/ecs_cluster
 terraform init && terraform apply
 
-cd terraform_v2/staging/web_app
+cd terraform/ENV/web_app
 terraform init && terraform apply
+
+cd terraform/ENV/head_worker
+terraform init && terraform apply
+```
+
+H) Add DNS record to connect your domain name to your load balancer
+
+Go to your domain register. Add the alb_dns output value (i.e. the public URL for your load balancer) to your DNS records for the domain you plan to use.
+
+E.g. to redirect staging.YOUR_DOMAIN_NAME to the load balancer you just deployed, add the following record to your DNS records:
+
+```
+TYPE: ALIAS
+HOST: staging
+VALUE: alb_dns output value (something like app-staging-725129955.us-east-2.elb.amazonaws.com)
+```
+
+Note: you can have multiple ALIAS records for different subdomains
+
+
+
+#### TBU: Steps for Updating Deployed Container
+
+Deploy updated container to ENV (e.g. prod or staging) and TF_MODULE (e.g. web_app or head_worker):
+
+```
+# MAKE CHANGE
+./terraform/lib/scripts/push_to_ecr.sh
+# If out of memory, run: docker system prune -a
+./terraform/lib/scripts/update_service_pull_from_ecr.sh ENV TF_MODULE
 ```
