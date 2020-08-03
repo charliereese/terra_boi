@@ -9,9 +9,14 @@ deployment environment (e.g. staging and prod)
 """
 namespace :terra_boi do	
 	task generate_infra: [:environment] do
+		ENVS = [:staging, :prod]
+		# TBU: accept ENVS as arg
+
 		# create_boilerplate_files
 		# apply_terraform_state
-		apply_terraform_cert
+		# apply_terraform_cert
+		apply_ecr
+		# apply_data
 	end
 end
 
@@ -37,14 +42,14 @@ end
 def create_boilerplate_files
 	config = {}
 
-	puts "\nGenerating boilerplate infrastructure as code with terra_boi for your rails project...\n".green.bold
+	puts "\nGenerating boilerplate infrastructure as code with terra_boi for your rails project...\n".cyan.bold
 	sleep 1
 	config[:ruby_version] = get_ruby_docker_base_image
 	sleep 1
 	config[:domain_name] = get_domain_name 
 	sleep 1
 
-	puts "\nRad. Generating infrastructure code using the configuration you provided...\n".green.bold
+	puts "\nRad. Generating infrastructure code using the configuration you provided...\n".cyan.bold
 	sleep 1
 
 	sh "rails g terra_boi:boilerplate -d #{config[:domain_name]} -r #{config[:ruby_version]}"
@@ -55,18 +60,30 @@ def create_boilerplate_files
 end
 
 def apply_terraform_state
-	puts "\nCreating terraform state...\n".green.bold
+	puts "\nCreating terraform state...\n".cyan.bold
 	sh "cd terraform/state && terraform init && terraform apply"
 end
 
 def apply_terraform_cert
-	puts "\nCreating HTTPS certificate in AWS Certificate Manager...\n".green.bold
+	puts "\nCreating HTTPS certificate in AWS Certificate Manager...\n".cyan.bold
 	sh "cd terraform/cert && terraform init"
 
 	print_certificate_validation_instructions
 	sleep 2
 	sh "cd terraform/cert && terraform apply"
 	confirm_certificate_successfully_validated
+end
+
+def apply_data
+	ENVS.each do |env|
+		puts "\nCreating RDS DB instance and S3 bucket for #{env}...\n".cyan.bold
+		sh "cd terraform/#{env}/data && terraform init && terraform apply"
+	end
+end
+
+def apply_ecr
+	puts "\nCreating AWS ECR (Elastic Container Registry) for your application's docker images...\n".cyan.bold
+	sh "cd terraform/ecr && terraform init && terraform apply"
 end
 
 # ---------------------------------
