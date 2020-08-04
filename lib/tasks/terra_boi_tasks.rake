@@ -22,15 +22,15 @@ namespace :terra_boi do
 		ENVS = get_envs(args)
 
 		create_boilerplate_files
-		apply_terraform_state
-		apply_terraform_cert
-		apply_ecr
-		apply_data
-		push_container_to_ecr
-		apply_web_app_and_worker
-		puts_urls_for_alb
-		puts_how_to_connect_domain_and_load_balancer
-		puts_twitter_plug
+		# apply_terraform_state
+		# apply_terraform_cert
+		# apply_ecr
+		# apply_data
+		# push_container_to_ecr
+		# apply_web_app_and_worker
+		# puts_urls_for_alb
+		# puts_how_to_connect_domain_and_load_balancer
+		# puts_twitter_plug
 	end
 
 	desc """
@@ -155,13 +155,7 @@ end
 
 def push_container_to_ecr
 	puts "\nTERRA_BOI | Building application docker container then pushing to ECR...\n".cyan.bold
-	sh "./terraform/lib/scripts/push_to_ecr.sh" do |ok, res|
-		if !ok
-			puts "\nTERRA_BOI | Docker container build and push failed (status = #{res.exitstatus})".cyan.bold
-			puts "\nTERRA_BOI | Pruning docker (to create more memory) and retrying...\n".cyan.bold
-			sh "docker system prune -a && ./terraform/lib/scripts/push_to_ecr.sh"
-		end
-	end
+	sh "./terraform/lib/scripts/push_to_ecr.sh"
 end
 
 def apply_web_app_and_worker
