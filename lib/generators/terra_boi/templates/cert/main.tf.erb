@@ -1,0 +1,32 @@
+provider "aws" {
+	version = "~> 2.0"
+	region  = var.region
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 1. STATE
+# ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+	backend "s3" {
+		bucket         = "<%= application_name %>-terraform-state-storage"
+		key            = "terraform/terra-boi-cert"
+		region         = "us-east-2"
+		dynamodb_table = "<%= application_name %>-terraform-state-lock"
+		encrypt        = true
+	}
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 2. CERT
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_acm_certificate_validation" "cert" {
+	certificate_arn = aws_acm_certificate.cert.arn
+}
+
+resource "aws_acm_certificate" "cert" {
+	domain_name       = "*.${var.domain_name}"
+	subject_alternative_names = ["${var.domain_name}"]
+	validation_method = "DNS"
+}

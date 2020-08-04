@@ -1,4 +1,7 @@
 module TerraBoi
-  class Railtie < ::Rails::Railtie
-  end
+	class Railtie < ::Rails::Railtie
+		rake_tasks do
+			load 'tasks/terra_boi_tasks.rake'
+		end
+	end
 end

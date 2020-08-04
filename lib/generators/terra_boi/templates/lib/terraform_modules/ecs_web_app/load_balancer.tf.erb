@@ -1,0 +1,92 @@
+# ----------------------------------------------
+# 1. AWS ALB
+# ----------------------------------------------
+
+resource "aws_alb" "application_load_balancer" {
+  name = "${var.app_name}-${var.environment}-lb"
+  load_balancer_type = "application"
+  
+  subnets = [ # default subnets
+    aws_default_subnet.default_subnet_a.id,
+    aws_default_subnet.default_subnet_b.id,
+    aws_default_subnet.default_subnet_c.id,
+  ]
+  
+  security_groups = [aws_security_group.load_balancer_sg.id]
+}
+
+resource "aws_security_group" "load_balancer_sg" {
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 443
+    to_port = 443
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# ----------------------------------------------
+# 2. AWS ALB TARGET GROUP + LISTENER
+# ----------------------------------------------
+
+resource "aws_lb_target_group" "target_group" {
+  name = "${var.app_name}-${var.environment}-target-group"
+  port = 80
+  protocol = "HTTP"
+  target_type = "ip"
+  vpc_id = aws_default_vpc.default_vpc.id
+}
+
+# 2.1 HTTP:
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_alb.application_load_balancer.arn
+  port = 80
+  protocol = "HTTP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+}
+
+# 2.2 HTTPS:
+
+resource "aws_lb_listener" "listener_https" {
+  load_balancer_arn = aws_alb.application_load_balancer.arn
+  port = 443
+  protocol = "HTTPS"
+  certificate_arn   = aws_acm_certificate_validation.cert.certificate_arn
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+}
+
+# ----------------------------------------------
+# 3. HTTPS CERT
+# ----------------------------------------------
+
+data "aws_acm_certificate" "cert" {
+  domain      = "*.${var.domain_name}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  certificate_arn = data.aws_acm_certificate.cert.arn
+}

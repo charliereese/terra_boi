@@ -1,0 +1,26 @@
+provider "aws" {
+	version = "~> 2.0"
+	region  = var.region
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 1. STATE
+# ---------------------------------------------------------------------------------------------------------------------
+
+terraform {
+	backend "s3" {
+		bucket         = "<%= application_name %>-terraform-state-storage"
+		key            = "terraform/<%= config[:env] %>-state/terra-boi-ecr"
+		region         = "us-east-2"
+		dynamodb_table = "<%= application_name %>-terraform-state-lock"
+		encrypt        = true
+	}
+}
+
+# --------------------------------------
+# 2. ECR Repository
+# --------------------------------------
+
+resource "aws_ecr_repository" "ecr_repo" {
+	name = "${var.app_name}-ecr-repo"
+}

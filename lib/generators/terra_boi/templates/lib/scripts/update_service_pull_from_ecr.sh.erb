@@ -1,0 +1,18 @@
+# Requires AWS cli >= v2.x.x
+# https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
+
+# Arg 1: prod or staging
+# Arg 2: web_app or head_worker
+
+SCRIPT_DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+ENV=$1
+SUB_FOLDER=$2
+cd $SCRIPT_DIR/../../$ENV/$SUB_FOLDER
+pwd
+
+echo "Deploying newest container pushed to ECR..."
+
+OUTPUT=$(aws ecs update-service --cluster $(terraform output ecs_cluster_name) --service $(terraform output ecs_service_name) --force-new-deployment)
+
+echo $OUTPUT
+echo "Deployment complete! Please allow 1-2 minutes for your <%= application_name %> container to boot and join the cluster."

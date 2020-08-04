@@ -1,0 +1,55 @@
+# --------------------------------------
+# 1. STATE
+# --------------------------------------
+
+terraform {
+  backend "s3" {
+    bucket         = "<%= application_name %>-terraform-state-storage"
+    key            = "terraform/<%= config[:env] %>-state/terra-boi-ecs-service-head-worker"
+    region         = "us-east-2"
+    dynamodb_table = "<%= application_name %>-terraform-state-lock"
+    encrypt        = true
+  }
+}
+
+# --------------------------------------
+# 2. Cluster
+# --------------------------------------
+
+module "head_worker" {
+  source = "../../lib/terraform_modules/ecs_worker"
+
+  app_name          = "<%= application_name %>"
+  environment       = "<%= config[:env] %>"
+  app_type          = "head_worker"
+  template_filename = "head_worker.json"
+  db_password = var.db_password
+  aws_access_key = var.aws_access_key
+  aws_secret_key = var.aws_secret_key
+  worker_task = {
+    memory        = 512
+    cpu           = 256
+    desired_count = 1 # Should always be 1. If increased, cron jobs will run multiple times. If you need more workers, create a new fargate task for your child_worker (using the same ecs_worker source) with the entrypoint ["sh", "-c", "rake db:migrate && rake jobs:work"]
+  }
+}
+
+output "ecs_service_name" {
+  value = module.head_worker.ecs_service_name
+}
+
+output "ecs_cluster_name" {
+  value = module.head_worker.ecs_cluster_name
+}
+
+variable "db_password" {
+  description = "The password for the database"
+  type        = string
+}
+
+variable "aws_access_key" {
+  type        = string
+}
+
+variable "aws_secret_key" {
+  type        = string
+}

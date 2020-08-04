@@ -1,0 +1,63 @@
+# -----------------------------
+# 1. GENERAL
+# -----------------------------
+
+# Optional
+
+variable "region" {
+  type    = string
+  default = "us-east-2"
+}
+
+variable "app_name" {
+  type    = string
+  default = "<%= application_name %>"
+}
+
+variable "environment" {
+  type    = string
+  default = "dev"
+}
+
+variable "app_type" {
+  type    = string
+  default = "web_app"
+}
+
+variable "template_filename" {
+  type    = string
+  default = "web_app.json"
+}
+
+variable "db_password" {
+  description = "The password for the database"
+  type        = string
+}
+
+variable "aws_access_key" {
+  type        = string
+}
+
+variable "aws_secret_key" {
+  type        = string
+}
+
+variable "domain_name" {
+  type    = string
+  default = "<%= class_options[:domain_name] %>"
+}
+
+# -----------------------------
+# 2. WEB APP TASK
+# -----------------------------
+
+variable "web_app_task" {
+  type = map
+
+  default = {
+    memory        = 512
+    cpu           = 256
+    desired_count = 2
+    port          = 3000
+  }
+}

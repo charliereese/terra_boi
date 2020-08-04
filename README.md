@@ -1,234 +1,159 @@
 # TerraBoi
 
-This ruby gem was created by [Charlie Reese](https://charliereese.ca/about) at [Clientelify](https://clientelify.com) to get rails applications deployed into production as quickly and easily as possible.
+## Introduction
 
-**Raison d'etre**: creating basic infrastructure to house production SaaS applications on AWS is tedious and boring. It's often a similar process every time, and every time it sucks.
+This ruby / rails gem was created by [Charlie Reese](https://charliereese.ca/about) for [Clientelify](https://clientelify.com). It creates AWS infrastructure for your rails application and deploys it in 5 steps (3 installation steps and 2 rake tasks). It is free to use.
 
-List of items created by this gem's generators:
-- Dockerfile
-- Rails initializer file (for setting up config.hosts)
-- Packer repository (for creating AMIs)
-- Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure as well as rolling out application updates)
-
-**Note**: generated Terraform files create / support remote state locking, load-balancing, auto-scaling, zero-downtime web app deployments, DBs, and S3 buckets.
-
-**Note**: after infrastructure files are generated, you will be ready to deploy your application to staging / production on AWS. If you have more advanced infrastructure needs (e.g. Redis / Solr instances), you may add to the generated Terraform files to support this.
-
-
-
-## Pre-requisites
-
-* [Terraform](https://www.terraform.io/) installed on your computer
-* [Packer](https://www.packer.io/downloads.html) installed on your computer
-* [Amazon Web Services (AWS) account](http://aws.amazon.com/)
-* Rails app returns 200 response at "/health-check" (`def health_check; head :ok; end`)
+Out of the box, terra_boi provides remote state locking, load-balancing, simple scaling, zero-downtime deployments, CloudWatch logging, DBs, and S3 buckets for multiple infrastructure environments: by default, terra_boi creates staging and prod environments for your web app.
 
 
 ## Installation
 
-**Note**: below installation steps should be completed in order.
+#### Installation A: pre-requisites
 
-### Installation - gem
+* [Terraform](https://www.terraform.io/) installed on your computer
+* [Amazon Web Services (AWS) account](http://aws.amazon.com/)
+* [AWS access key and secret key](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) (to be used below shortly)
+* Rails ~> 6.0
 
-Add this line to your (Rails) application's Gemfile:
+#### Installation B: install ruby gems
+
+Add these lines to your (Rails) application's Gemfile:
 
 ```ruby
-gem 'terra_boi'
+group :development do
+	gem 'terra_boi'
+end
+
+gem 'pg' # Postgresql
+gem 'whenever', require: false # For cron jobs set in config/schedule.rb
 ```
 
 And then execute:
 
 ```bash
-$ bundle
+$ bundle && bundle exec wheneverize .
 ```
 
-### Installation - AWS access
+#### Installation C: set environment variables
 
-Set up your [AWS access / secret access 
-keys](http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys) in `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variables:
-
-```
-export AWS_ACCESS_KEY_ID=your_access_key_id
-export AWS_SECRET_ACCESS_KEY=your_secret_access_key
-```
-
-Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
-
-Note: SSH access to created EC2 instances is granted using SSH keys existing at `~/.ssh/id_rsa.pub` and `~/.ssh/id_rsa` on your local machine. If they do not exist, create them.
-
-### Installation - generate infrastructure code
-
-To generate boilerplate infrastructure code (config.host initializer filer, Dockerfile, Packer repository, and terraform repository):
-
-`rails generate terra_boi:boilerplate --domain_name DOMAIN.COM --ruby_version 2.5.1`
-
-### Installation - Packer (creating web server AMIs)
-
-**A. Create private DockerHub repository**
-
-Create private DockerHub repository for your rails application (if possible, use the exact same name as your rails application).
-
-**Note**: packer generator will assume your DockerHub repository has the same name as your rails application folder. If this isn't true, update generated Packer `ami_build.json` file after it is generated.
-
-**B. Setup DockerHub access:**
-
-Add DockerHub username and access key to `~/.zprofile` (or equivalent file for your shell if not using .zsh) as environment variables (if your image is in a private repository):
+Set and export terraform AWS and data-related environment variables in ~/.zprofile (or your respective shell dotfile e.g. ~/.bashrc)
 
 ```
-DOCKERHUB_USERNAME=myname
-DOCKERHUB_ACCESS_TOKEN=myAccessToken
-export DOCKERHUB_USERNAME DOCKERHUB_ACCESS_TOKEN
+TF_VAR_db_password=your_password # whatever you want it to be
+TF_VAR_db_username=your_username # whatever you want it to be
+export TF_VAR_db_password TF_VAR_db_username 
+
+AWS_ACCESS_KEY=your_access_key
+TF_VAR_aws_access_key=$AWS_ACCESS_KEY
+export AWS_ACCESS_KEY TF_VAR_aws_access_key
+
+AWS_SECRET_KEY=your_secret_access_key
+TF_VAR_aws_secret_key=$AWS_SECRET_KEY
+export AWS_SECRET_KEY TF_VAR_aws_secret_key
 ```
 
-Then run `source ~/.zprofile` (or equivalent command for your shell if not using .zsh)
-
-**Note**: DockerHub access key can be found at https://hub.docker.com/settings/security
-
-### Installation - Terraform (deploying DBs + web server AMIs)
-
-**A. Set up remote state:**
-
-`cd terraform/state`
-
-Run `terraform init` and then `terraform apply` to set up s3 bucket and dynamoDB for remote state and locking (this will work for both prod and staging).
-
-**B. Set up DB / S3:**
-
-`cd terraform/[ENV]/data`
-
-Set terraform data-related environment variables in .zprofile (or your respective shell dotfile)
-
-```
-TF_VAR_db_password=your_password
-TF_VAR_db_username=your_username
-```
-
-To deploy infrastructure to AWS:
-
-```
-terraform init # IF NOT ALREADY RUN
-terraform apply
-```
-
-**C. Set up web servers:**
-
-`cd terraform/[ENV]/web_servers`
-
-To deploy infrastructure to AWS:
-
-```
-terraform init # IF NOT ALREADY RUN
-terraform apply
-```
-
-While aws_acm_certificate_validation.cert is creating (it will hang if you don't add CNAME verification record in ACM):
-
-i. Log into AWS console, go to certificate management, and add the created CNAME record specified to the DNS configuration for your domain
-ii. Redirect domain name to Application load balancer:
-	- Go to your domain registrar of choice
-	- Create alias record that points to the dns name of the application load balancer (use subdomain in alias record like STAGING.example.com for staging)
-	- Create URL redirect record for prod (redirect www.site.com to site.com)
-
-After these changes propogate (should take about an hour or two locally), your webservers should be set up, https should be working, and you should be good to go!
-
+After you've set and export the above environment variables, run `source ~/.zprofile` (or source your respective shell dotfile).
 
 
 ## Usage
 
-**Note**: below usage steps should be completed in order
-
-### Usage - Packer (creating web server AMIs)
-
-**A. Push latest application image to DockerHub**
-
-You can automatically trigger DockerHub image builds when new code is pushed to a repository's master branch using DockerHub's free Github integration. 
-
-Otherwise, `docker build . && docker container create [IMAGE_ID] && docker commit [CONTAINER_ID] [DOCKER_USERNAME]/[APPLICATION_NAME]:latest && docker push [DOCKER_USERNAME]/[APPLICATION_NAME]:latest`. Make sure you are pushing to a private repository.
-
-**B. Create Packer AMI:**
+#### Usage A: generate infrastructure rake task
 
 ```
-cd packer 
-
-packer build -var DOCKERHUB_ACCESS_TOKEN=$DOCKERHUB_ACCESS_TOKEN -var DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME -var DB_PASSWORD=$TF_VAR_db_password -var AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -var AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY application.json
+rake terra_boi:generate_infra
 ```
 
-**C. Clean up:**
+The above rake task will ask you some interactive questions, so stay close to your terminal!
 
-Every so often you'll want to remove old AMIs created by Packer (unless you want to be charged a couple cents a month).
+Expected rake task duration: ~20 minutes (provisioning AWS infrastructure takes a while).
 
-To remove them, deregister them on the [AWS AMI management page](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Images:sort=name), then delete the associated snapshot on the [AWS snapshot management page](https://us-east-2.console.aws.amazon.com/ec2/home?region=us-east-2#Snapshots:sort=snapshotId).
+Note: the above rake task takes an optional argument for environments (e.g. `rake \"terra_boi:generate_infra[dev staging prod]\"`). Infrastructure environments default to staging and prod.
 
-### Usage - Terraform (update web server AMIs)
+Note: this command will also deploy your application after infrastructure has been created. If you only wish to deploy an update, use the below command.
 
-**A. Update Terraform web server AMIs:**
-
-`cd terraform/[ENV]/web_servers`
-
-To deploy infrastructure to AWS:
+#### Usage B: deploy application updates rake task
 
 ```
-terraform init # IF NOT ALREADY RUN
-terraform apply
+rake deploy
+
+# Alternatively: rake "deploy[staging]", rake "deploy[staging prod]", etc.
 ```
 
-### Usage - ssh access
+The above rake task will ask you an interactive question, so stay close to your terminal!
 
-ssh into ec2 instance and run bash in container:
+Expected rake task duration: 5 - 10 minutes.
+
+Note: the above rake task takes an optional argument for environments (e.g. `rake \"deploy[staging prod]\"`). By default, it will deploy to staging then prod infrastructure.
+
+#### Usage C: recommendations
+
+- Uncomment `config.force_ssl = true` in `config/environments/production.rb` file.
+
+
+## Infrastructure customization
+
+Because terra_boi uses Terraform modules, small customizations can be made by changing variables in .tf files. 
+
+For example, if you wanted to run 10 web app instances behind the load balancer in your prod environment (instead of the default 2), you could change the web_app_task => desired_count argument from 2 to 10 in the file `terraform/prod/web_app/ecs.tf`. Similarly, if your web app task container requires more memory, you could change the web_app_task => memory argument in the file `terraform/prod/web_app/ecs.tf`.
+
+**Note**: if your rails application has more advanced infrastructure customization needs (e.g. Redis / Solr instances), you may add the resources required to the Terraform files created by terra_boi.
+
+## Appendix
+
+#### Appendix - infrastructure / code generated by terra_boi
+
+- AWS Elastic Container Registry (ECR)
+- AWS Application Load Balancer (ALB)
+- AWS Elastic Container Services (for your web app and worker)
+- AWS Fargate tasks (for your web app and worker)
+- AWS CloudWatch logging
+- AWS Security Groups
+- AWS DynamoDB for remote state locking 
+- AWS RDS Postgresql DBs
+- Rails DB config file
+- Rails data config file
+- Rails initializer file (for setting up config.hosts)
+- Dockerfile
+- HTTPS / SSL certificate
+
+#### Appendix - destroying your infrastructure
+
+To destroy infrastructure created by terra_boi, run `terraform destroy` in the following directories in the following order:
+
+- terraform/ENV/head_worker
+- terraform/ENV/web_app
+- terraform/ENV/ecs_cluster
+- terraform/ENV/data
+- terraform/ecr
+- terraform/cert
+- terraform/state
+
+OR 
 
 ```
-ssh ubuntu@PUBLICIPOFINSTANCE
-
-docker container exec -it APP_NAME bash
+rake terra_boi:destroy_infra
 ```
 
+Note: the above rake task takes an optional argument for environments (e.g. `rake \"terra_boi:destroy_infra[dev staging prod]\"`). Infrastructure environments default to staging and prod.
 
-
-## Infrastructure created
-
-The aforementioned generators create a `terraform` directory with `state`, `prod`, and `staging` subdirectories. 
-
-The `state` directory contains an S3 bucket and a DynamoDB table to store and lock state (for both prod and staging).
-
-The `prod` and `staging` subdirectories contain `data` (DB + S3) and `web_servers` (SSL cert, load balancing, autoscaling, EC2) directories.
-
-
-
-## Running tests
-
-From the root directory:
-
-```
-rake test
-```
-
-
-
-## Other tips
-
-Clean up terraform infrastructure when no longer planning to use (DANGER FOR PROD, WILL DESTROY INFRASTRUCTURE):
-
-`terraform destroy`
-
-**For extra security in staging:** update Terraform web_servers `main.tf` file to only allow ingress web_server connections from your IP / your team's IPs
-
-
-
-## Contributing
-
-This gem is currently not actively accepting contributions. 
-
-With that in mind, if you'd like to make a fix / change, please create a pull request (and when I have a moment - probably in a couple weeks time - I'll have a look)!
-
-
-
-## License
+#### Appendix - license
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
+#### Appendix - contributing
 
+If you'd like to make a fix / change, please create a pull request! When I have a moment, I'll have a look!
 
-## Updating gem version (for maintainers)
+Recommended contribution: terraform infrastructure generation testing
+
+#### Appendix - other tips
+
+**Something didn't work and you aren't sure why?** If you're running `rake terra_boi:generate_infra`, try running it again. Sometimes Terraform / the AWS API will throw sporadic errors without reason!
+
+**For extra security in staging / internal applications:** update Terraform security groups to only allow ingress web_app connections from your team's IP addresses
+
+#### Appendix - updating gem version (for maintainers)
 
 **1. Update version**
 
