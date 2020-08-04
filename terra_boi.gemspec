@@ -10,8 +10,12 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Charlie Reese"]
   spec.email       = ["j.charles.reese@gmail.com"]
   spec.homepage    = "https://github.com/charliereese/terra_boi"
-  spec.summary     = "Generators to help you get rails applications deployed into production as quickly and easily as possible."
-  spec.description = "This gem was created to get rails applications deployed into production as quickly and easily as possible. It contains generators that create infrastructure code for load balancing / auto scaling / zero-downtime deployments, (rails) web apps (EC2 instances), DBs, and S3 buckets. List of items created by this gem's generators: Dockerfile, Rails initializer file (for setting up config.hosts), Packer repository (for creating AWS EC2 AMIs), and Terraform repository (for creating infrastructure as code to immediately deploy staging / prod infrastructure)."
+  spec.summary     = "Deploy your rails application to AWS with `rake deploy`. terra_boi generates AWS infrastructure as code, provisions AWS infrastructure, and then deploys your application to it using Terraform, rails generators, and rake tasks."
+  spec.description = """Deploy your rails application to AWS with `rake deploy`.
+
+This ruby / rails gem was created by Charlie Reese (charliereese.ca/about) for Clientelify. It creates AWS infrastructure for your rails application and deploys it in 5 steps (3 installation steps and 2 rake tasks). It is free to use.
+
+Out of the box, terra_boi provides remote state locking, load-balancing, simple scaling, zero-downtime deployments, CloudWatch logging, DBs, and S3 buckets for multiple infrastructure environments: by default, terra_boi creates staging and prod environments for your web app."""
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

@@ -2,7 +2,11 @@
 
 ## Introduction
 
-This ruby / rails gem was created by [Charlie Reese](https://charliereese.ca/about) for [Clientelify](https://clientelify.com). It creates AWS infrastructure for your rails application and deploys it in 5 steps (3 installation steps and 2 rake tasks). It is free to use.
+Deploy your rails application to AWS with `rake deploy`.
+
+This ruby / rails gem was created by [Charlie Reese](https://charliereese.ca/about) for [Clientelify](https://clientelify.com). It creates AWS infrastructure for your rails application and deploys it in 5 steps (3 installation steps and 2 rake tasks). Subsequent deployment is 1 step (`rake deploy`). 
+
+It is free to use.
 
 Out of the box, terra_boi provides remote state locking, load-balancing, simple scaling, zero-downtime deployments, CloudWatch logging, DBs, and S3 buckets for multiple infrastructure environments: by default, terra_boi creates staging and prod environments for your web app.
 
