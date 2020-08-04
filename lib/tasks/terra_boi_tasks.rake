@@ -109,56 +109,56 @@ end
 def create_boilerplate_files
 	config = {}
 
-	puts "\nGenerating boilerplate infrastructure as code with terra_boi for your rails project...\n".cyan.bold
+	puts "\nTERRA_BOI | Generating boilerplate infrastructure as code with terra_boi for your rails project...\n".cyan.bold
 	sleep 1
 	config[:ruby_version] = get_ruby_docker_base_image
 	sleep 1
 	config[:domain_name] = get_domain_name 
 	sleep 1
 
-	puts "\nGenerating infrastructure code using the configuration you provided...\n".cyan.bold
+	puts "\nTERRA_BOI | Generating infrastructure code using the configuration you provided...\n".cyan.bold
 	sleep 1
 
 	sh "rails g terra_boi:boilerplate -d #{config[:domain_name]} -r #{config[:ruby_version]}"
 
 	sleep 1
-	puts "\nMarking deployment scripts executable...\n".bold
+	puts "\nTERRA_BOI | Marking deployment scripts executable...\n".bold
 	sh "chmod +x ./terraform/lib/scripts/*"
 end
 
 def apply_terraform_state
-	puts "\nCreating terraform state...\n".cyan.bold
-	sh "cd terraform/state && terraform init && terraform apply"
+	puts "\nTERRA_BOI | Creating terraform state...\n".cyan.bold
+	sh "cd terraform/state && terraform init && terraform apply -input=false -auto-approve"
 end
 
 def apply_terraform_cert
-	puts "\nCreating HTTPS certificate in AWS Certificate Manager...\n".cyan.bold
+	puts "\nTERRA_BOI | Creating HTTPS certificate in AWS Certificate Manager...\n".cyan.bold
 	sh "cd terraform/cert && terraform init"
 
 	print_certificate_validation_instructions
 	sleep 2
-	sh "cd terraform/cert && terraform apply"
+	sh "cd terraform/cert && terraform apply -input=false -auto-approve"
 	confirm_certificate_successfully_validated
 end
 
 def apply_data
 	ENVS.each do |env|
-		puts "\nCreating RDS DB instance and S3 bucket for #{env}...\n".cyan.bold
-		sh "cd terraform/#{env}/data && terraform init && terraform apply"
+		puts "\nTERRA_BOI | Creating RDS DB instance and S3 bucket for #{env}...\n".cyan.bold
+		sh "cd terraform/#{env}/data && terraform init && terraform apply -input=false -auto-approve"
 	end
 end
 
 def apply_ecr
-	puts "\nCreating AWS ECR (Elastic Container Registry) for your application's docker images...\n".cyan.bold
-	sh "cd terraform/ecr && terraform init && terraform apply"
+	puts "\nTERRA_BOI | Creating AWS ECR (Elastic Container Registry) for your application's docker images...\n".cyan.bold
+	sh "cd terraform/ecr && terraform init && terraform apply -input=false -auto-approve"
 end
 
 def push_container_to_ecr
-	puts "\nBuilding application docker container then pushing to ECR...\n".cyan.bold
+	puts "\nTERRA_BOI | Building application docker container then pushing to ECR...\n".cyan.bold
 	sh "./terraform/lib/scripts/push_to_ecr.sh" do |ok, res|
 		if !ok
-			puts "\nDocker container build and push failed (status = #{res.exitstatus})".cyan.bold
-			puts "\nPruning docker (to create more memory) and retrying...\n".cyan.bold
+			puts "\nTERRA_BOI | Docker container build and push failed (status = #{res.exitstatus})".cyan.bold
+			puts "\nTERRA_BOI | Pruning docker (to create more memory) and retrying...\n".cyan.bold
 			sh "docker system prune -a && ./terraform/lib/scripts/push_to_ecr.sh"
 		end
 	end
@@ -167,9 +167,9 @@ end
 def apply_web_app_and_worker
 	directories = [:ecs_cluster, :web_app, :head_worker]
 	ENVS.each do |env|	
-		puts "\nBuilding web app and worker ECS infrastructure for #{env}...\n".cyan.bold
+		puts "\nTERRA_BOI | Building web app and worker ECS infrastructure for #{env}...\n".cyan.bold
 		directories.each do |dir_name|
-			sh "cd terraform/#{env}/#{dir_name} && terraform init && terraform apply"
+			sh "cd terraform/#{env}/#{dir_name} && terraform init && terraform apply -input=false -auto-approve"
 		end
 	end
 end
@@ -177,15 +177,15 @@ end
 def puts_urls_for_alb
 	ENVS.each do |env|
 		url = `cd terraform/#{env}/web_app && terraform output alb_dns`
-		puts "\nPublic application load balancer URL for #{env}:".cyan.bold
+		puts "\nTERRA_BOI | Public application load balancer URL for #{env}:".cyan.bold
 		puts "#{env} alb_dns: #{url}"
 	end
 end
 
 def puts_how_to_connect_domain_and_load_balancer
-	puts "\nGIDDY UP! TERRA_BOI HAS FINISHED CREATING INFRASTRUCTURE FOR YOUR RAILS APPLICATION!\n".cyan.bold
+	puts "\nTERRA_BOI | GIDDY UP! TERRA_BOI HAS FINISHED CREATING INFRASTRUCTURE FOR YOUR RAILS APPLICATION!".cyan.bold
 
-	puts "\nTo connect your domain name to your application's new AWS infrastructure:".red
+	puts "\nTERRA_BOI | To connect your domain name to your application's new AWS infrastructure:".red
 	puts "1) Go to your domain register (e.g. Namecheap)"
 	puts "2) Add the alb_dns output value (i.e. the public URL for your load balancer) to your domain's DNS records. alb_dns public URL values are output above"
 	puts """E.g. to redirect staging.YOUR_DOMAIN_NAME to the load balancer you just deployed, add the following record to your DNS records: 
@@ -197,11 +197,11 @@ def puts_how_to_connect_domain_and_load_balancer
 end
 
 def puts_twitter_plug
-	puts "\nLet me know what you think about terra_boi on Twitter @charlieinthe6!".cyan.bold
+	puts "\nTERRA_BOI | Let me know what you think about terra_boi on Twitter @charlieinthe6!".cyan.bold
 end
 
 def conditional_push_container_to_ecr
-	print "Question: ".red
+	print "TERRA_BOI | Question: ".red
 	puts "Build and push container updates to ECR first (y/n)?"
 	puts "Answer y if you haven't built and pushed most recent updates to ECR yet."
 	puts "...and answer y if you aren't sure."
@@ -216,7 +216,7 @@ end
 # ---------------------------------
 
 def print_certificate_validation_instructions
-	puts "\nCertificate validation instructions:".red
+	puts "\nTERRA_BOI | Certificate validation instructions:".red
 	puts "1) Log into AWS Console and go to AWS Certificate Manager (default region is us-east-2)"
 	puts "2) Expand issued certificate for your domain, and find CNAME record for domain validation"
 	puts "3) Add CNAME record listed for your domain to your domain's DNS records (i.e. log into where you purchased your domain and add CNAME record to it)\n\n"
@@ -226,7 +226,7 @@ end
 def confirm_certificate_successfully_validated
 	answer = ''
 	until answer == 'y'
-		print "Question 3: ".red
+		print "TERRA_BOI | Question 3: ".red
 		puts "Has your HTTPS / SSL certificate successfully validated in AWS Console - AWS Certificate Manager (y/n)?"
 		print "==> ".red
 		answer = STDIN.gets.downcase.gsub(/[^yn]/, "")
@@ -241,7 +241,7 @@ def confirm_certificate_successfully_validated
 end
 
 def get_ruby_docker_base_image
-	print "Question 1: ".red
+	print "TERRA_BOI | Question 1: ".red
 	puts "Do you want to use the default ruby Docker base image 2.7.1 (y/n)?"
 	print "==> ".red
 	answer = STDIN.gets.downcase.gsub(/[^yn]/, "")
@@ -250,7 +250,7 @@ def get_ruby_docker_base_image
 		ruby_docker_base_image = "2.7.1"
 	else
 		ruby_docker_base_image = ""
-		print "\nQuestion 1 follow-up: ".red
+		print "\nTERRA_BOI | Question 1 follow-up: ".red
 		puts "Which ruby Docker base image would you like to use (https://hub.docker.com/_/ruby/)?"
 		puts "Recommended answer: 2.7.1"
 		
@@ -265,7 +265,7 @@ def get_ruby_docker_base_image
 end
 
 def get_domain_name
-	print "\nQuestion 2: ".red
+	print "\nTERRA_BOI | Question 2: ".red
 	puts "What domain name will you be using for your project?"
 	puts "E.g. example.com (do not include a subdomain or 'www')"
 	

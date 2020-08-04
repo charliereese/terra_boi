@@ -55,10 +55,6 @@ export AWS_SECRET_KEY TF_VAR_aws_secret_key
 
 After you've set and export the above environment variables, run `source ~/.zprofile` (or source your respective shell dotfile).
 
-#### Installation D: recommendations
-
-- Uncomment `config.force_ssl = true` in `config/environments/production.rb` file.
-
 
 ## Usage
 
@@ -67,6 +63,10 @@ After you've set and export the above environment variables, run `source ~/.zpro
 ```
 rake terra_boi:generate_infra
 ```
+
+The above rake task will ask you some interactive questions, so stay close to your terminal!
+
+Expected rake task duration: ~20 minutes (provisioning AWS infrastructure takes a while).
 
 Note: the above rake task takes an optional argument for environments (e.g. `rake \"terra_boi:generate_infra[dev staging prod]\"`). Infrastructure environments default to staging and prod.
 
@@ -80,7 +80,16 @@ rake deploy
 # Alternatively: rake "deploy[staging]", rake "deploy[staging prod]", etc.
 ```
 
+The above rake task will ask you an interactive question, so stay close to your terminal!
+
+Expected rake task duration: 5 - 10 minutes.
+
 Note: the above rake task takes an optional argument for environments (e.g. `rake \"deploy[staging prod]\"`). By default, it will deploy to staging then prod infrastructure.
+
+#### Usage C: recommendations
+
+- Uncomment `config.force_ssl = true` in `config/environments/production.rb` file.
+
 
 ## Infrastructure customization
 
