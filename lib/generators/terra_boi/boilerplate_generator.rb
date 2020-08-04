@@ -36,7 +36,7 @@ module TerraBoi
 			generate "terra_boi:tf_env -e #{class_options[:envs].join(' ')} -d #{class_options[:domain_name]}"
 			generate "terra_boi:tf_state"
 			generate "terra_boi:dockerfile --ruby_version #{class_options[:ruby_version]}"
-			generate "terra_boi:host_initializer"
+			generate "terra_boi:host_initializer -d #{class_options[:domain_name]}"
 			generate "terra_boi:db_config"
 			generate "terra_boi:data_config"
 		end

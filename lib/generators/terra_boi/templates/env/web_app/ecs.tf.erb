@@ -25,6 +25,12 @@ module "web_app" {
 	db_password = var.db_password
 	aws_access_key = var.aws_access_key
 	aws_secret_key = var.aws_secret_key
+	web_app_task = {
+		memory        = 512
+		cpu           = 256
+		desired_count = 2
+		port          = 3000
+	}
 }
 
 output "ecs_service_name" {
