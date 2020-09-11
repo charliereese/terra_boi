@@ -22,15 +22,15 @@ namespace :terra_boi do
 		ENVS = get_envs(args)
 
 		create_boilerplate_files
-		# apply_terraform_state
-		# apply_terraform_cert
-		# apply_ecr
-		# apply_data
-		# push_container_to_ecr
-		# apply_web_app_and_worker
-		# puts_urls_for_alb
-		# puts_how_to_connect_domain_and_load_balancer
-		# puts_twitter_plug
+		apply_terraform_state
+		apply_terraform_cert
+		apply_ecr
+		apply_data
+		push_container_to_ecr
+		apply_web_app_and_worker
+		puts_urls_for_alb
+		puts_how_to_connect_domain_and_load_balancer
+		puts_twitter_plug
 	end
 
 	desc """
