@@ -20,7 +20,7 @@ variable "db_username" {}
 variable "db_password" {}
 
 module "db_and_s3" {
-  source = "github.com/charliereese/terraform_modules//data?ref=v0.0.27"
+  source = "github.com/charliereese/terraform_modules//data?ref=v0.0.28"
 
   env               = "<%= config[:env] %>"
   app_name          = "<%= application_name %>"
