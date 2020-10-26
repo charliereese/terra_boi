@@ -15,7 +15,7 @@ module TerraBoi
 
 	  def init
 	  	# defined in lib/generators/extensions
-	  	self.application_name = generate_application_name
+	  	self.application_name = generate_application_name separators: false
 	  end
 
 	  def create_db_config_file

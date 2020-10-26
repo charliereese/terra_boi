@@ -14,7 +14,7 @@ module TerraBoi
 		)
 
 		def init
-			self.application_name = generate_application_name
+			self.application_name = generate_application_name separators: false
 		end
 
 		def create_main_terraform_file
