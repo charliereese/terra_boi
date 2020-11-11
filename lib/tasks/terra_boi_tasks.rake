@@ -26,7 +26,8 @@ namespace :terra_boi do
 		apply_terraform_cert
 		apply_ecr
 		apply_data
-		push_container_to_ecr
+	  run_wheneverize	
+    push_container_to_ecr
 		apply_web_app_and_worker
 		puts_urls_for_alb
 		puts_how_to_connect_domain_and_load_balancer
@@ -104,6 +105,10 @@ def get_envs(args)
 	else
 		[:staging, :prod]
 	end
+end
+
+def run_wheneverize
+  sh "bundle exec wheneverize ."
 end
 
 def create_boilerplate_files
