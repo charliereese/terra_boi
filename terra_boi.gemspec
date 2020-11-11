@@ -31,4 +31,5 @@ Out of the box, terra_boi provides remote state locking, load-balancing, simple 
 
   spec.add_development_dependency "rails", '~> 6.0', '>= 6.0.0'
   spec.add_runtime_dependency "colorize"
+  spec.add_dependency 'pg'
 end
