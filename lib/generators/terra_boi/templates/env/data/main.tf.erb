@@ -24,7 +24,7 @@ module "db_and_s3" {
 
   env               = "<%= config[:env] %>"
   app_name          = "<%= application_name %>"
-  db_instance_class = "<%= config[:env] == 'prod' ? 'db.t3.micro' : 'db.t2.micro' %>"
+  db_instance_class = "db.t3.micro"
   db_encrypted      = <%= config[:env] == 'prod' ? true : false %>
   db_username       = var.db_username
   db_password       = var.db_password
