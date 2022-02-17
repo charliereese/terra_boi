@@ -5,9 +5,9 @@ SCRIPT_DIR=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 cd $SCRIPT_DIR/../../ecr
 
 # Retrieve an authentication token and authenticate your Docker client to your registry.
-AWS_REGION=$(terraform output aws_region)
-AWS_ECR_REPO_URL=$(terraform output ecr_repo_url)
-AWS_ECR_REPO_NAME=$(terraform output ecr_repo_name)
+AWS_REGION=$(terraform --raw output aws_region)
+AWS_ECR_REPO_URL=$(terraform --raw output ecr_repo_url)
+AWS_ECR_REPO_NAME=$(terraform --raw output ecr_repo_name)
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ECR_REPO_URL
 
 # Build your Docker image using the following command
