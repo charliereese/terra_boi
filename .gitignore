@@ -12,3 +12,4 @@ coverage
 *tfstate*
 terraform
 packer
+.idea/**
