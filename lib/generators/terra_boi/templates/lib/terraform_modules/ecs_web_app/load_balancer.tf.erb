@@ -43,7 +43,7 @@ resource "aws_security_group" "load_balancer_sg" {
 # ----------------------------------------------
 
 resource "aws_lb_target_group" "target_group" {
-  name = "${var.app_name}-${var.environment}-target-group"
+  name = "${var.app_name}-${var.environment}"
   port = 80
   protocol = "HTTP"
   target_type = "ip"
